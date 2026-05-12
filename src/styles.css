@@ -657,26 +657,49 @@ img { display: block; max-width: 100%; }
 }
 
 .crew-card {
-  background-position: center;
-  background-size: cover;
   color: white;
   min-height: 314px;
+  overflow: hidden;
   padding: 48px;
   position: relative;
   transition: filter .65s var(--ease-luxury);
   will-change: transform;
 }
 
+.crew-card-image {
+  height: 100%;
+  inset: 0;
+  max-width: none;
+  object-fit: cover;
+  position: absolute;
+  transition: transform .9s var(--ease-luxury), filter .9s var(--ease-luxury);
+  width: 100%;
+}
+
+.crew-card-employers .crew-card-image {
+  object-position: 43% center;
+  transform: scale(1.02);
+}
+
+.crew-card-members .crew-card-image {
+  object-position: 84% center;
+  transform: scale(1.02);
+}
+
 .crew-card::before {
-  background: linear-gradient(90deg, var(--primary-900) 0%, rgba(10,36,48,.72) 42%, rgba(10,36,48,0) 100%);
+  background:
+    linear-gradient(90deg, rgba(10,36,48,.96) 0%, rgba(10,36,48,.82) 34%, rgba(10,36,48,.42) 62%, rgba(10,36,48,0) 100%),
+    linear-gradient(180deg, rgba(10,36,48,.16) 0%, rgba(10,36,48,.34) 100%);
   content: '';
   inset: 0;
   position: absolute;
+  z-index: 1;
 }
 
 .crew-card:hover { filter: saturate(1.03); }
+.crew-card:hover .crew-card-image { transform: scale(1.055); }
 
-.crew-card > div { max-width: 430px; position: relative; }
+.crew-card > div { max-width: 430px; position: relative; z-index: 2; }
 .crew-card p:not(.eyebrow) { color: rgba(255,255,255,.8); font-size: 18px; line-height: 1.35; margin: 20px 0 26px; }
 
 .support-section { background: var(--primary-50); }
