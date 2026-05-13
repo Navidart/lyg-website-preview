@@ -18,9 +18,8 @@ export default function CalculatorTrustSection() {
     <MotionSection className="section calculator-trust">
       <motion.article
         className="calculator-card"
-        style={{ backgroundImage: `url(${assets.blueprint})` }}
+        style={{ '--calculator-bg': `url(${assets.blueprint})` }}
         variants={cardReveal}
-        whileHover={{ y: -4, transition: { duration: 0.45, ease: luxuryEase } }}
       >
         <p className="eyebrow">Cost Calculator</p>
         <h2>Estimate Yacht Ownership Costs</h2>
@@ -38,7 +37,6 @@ export default function CalculatorTrustSection() {
       <motion.article
         className="trust-card"
         variants={cardReveal}
-        whileHover={{ y: -4, transition: { duration: 0.45, ease: luxuryEase } }}
       >
         <p className="eyebrow">Why Luxury Yacht Group</p>
         <h2>Trusted Worldwide For Over 20 Years</h2>

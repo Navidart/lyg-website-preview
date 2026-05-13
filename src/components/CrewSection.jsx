@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from 'framer-motion';
 import Icon from './Icons.jsx';
-import { cardReveal, luxuryEase, stagger } from '../motion.js';
+import { cardReveal, stagger } from '../motion.js';
 
 const crewCards = [
   ['For Employers', 'Hire Top Yacht Crew', 'Access our global network of qualified professionals for every yacht position.', 'Find Crew', '/assets/images/image-find-crew.jpg', 'crew-card-employers'],
@@ -22,7 +22,6 @@ export default function CrewSection() {
           className={`crew-card ${cropClass}`}
           key={title}
           variants={cardReveal}
-          whileHover={{ y: -4, transition: { duration: 0.45, ease: luxuryEase } }}
         >
           <img className="crew-card-image" src={image} alt="" />
           <div>

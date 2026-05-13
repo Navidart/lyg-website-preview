@@ -1,56 +1,123 @@
-import React from "react";
-import { motion } from 'framer-motion';
-import { assets, menus } from '../data.js';
-import { reveal, stagger } from '../motion.js';
+const footerLogo = 'https://www.figma.com/api/mcp/asset/7f69e832-1293-43c0-9fb6-24fb84af5b3e';
+const socialIconAssets = [
+  {
+    label: 'Instagram',
+    href: '#',
+    src: 'https://www.figma.com/api/mcp/asset/e3968fd0-3d5f-4f1f-80ec-9b8dbb737d40',
+    width: 15.75,
+  },
+  {
+    label: 'Facebook',
+    href: '#',
+    src: 'https://www.figma.com/api/mcp/asset/a26d2d0f-8620-4c77-899c-1cc3d3f243d8',
+    width: 11.25,
+  },
+  {
+    label: 'LinkedIn',
+    href: '#',
+    src: 'https://www.figma.com/api/mcp/asset/fb929815-4437-4594-b9df-c0ccc550cd19',
+    width: 15.75,
+  },
+  {
+    label: 'YouTube',
+    href: '#',
+    src: 'https://www.figma.com/api/mcp/asset/aa67f8a2-6a8f-4a51-aa92-260f98377c30',
+    width: 20.25,
+  },
+];
 
-const footerColumns = {
-  Sales: menus.Sales,
-  Charter: ['Yacht Fleet', 'Charter Marketing', 'Destination Guides', 'Request Availability'],
-  'Yacht Support': menus['Yacht Support'],
-  Crew: menus.Crew,
-  Tools: menus.Tools,
-  Company: ['About Us', 'Newsroom', 'Contact', 'Our Offices'],
-  Accounts: ['Sign In', 'Register'],
-};
-
-const socialIcons = [
-  ['Instagram', 'https://www.figma.com/api/mcp/asset/16d69958-611a-4ad2-bbff-5e2f8cdcddb6', '15.75'],
-  ['LinkedIn', 'https://www.figma.com/api/mcp/asset/d4fe4d4f-64ca-4435-9cf0-06478d12041d', '15.75'],
-  ['YouTube', 'https://www.figma.com/api/mcp/asset/2d7e8f07-94bd-49a6-b7e5-a53525c34b7a', '20.25'],
+const footerColumns = [
+  {
+    title: 'Sales',
+    links: ['Brokerage', 'Yachts for Sale', 'New Construction', 'How to Buy', 'How to Sell', "Buyer's Guide"],
+  },
+  {
+    title: 'Charter',
+    links: ['Yacht Fleet', 'Charter Marketing', 'Destination Guides', 'Request Availability'],
+  },
+  {
+    title: 'Yacht Support',
+    links: [
+      'Financial Services',
+      'Payroll & Accounting',
+      'Payroll Service Process',
+      'Logistical Support',
+      'Admin Services',
+      'Price List',
+      'Document Library',
+    ],
+  },
+  {
+    title: 'Crew',
+    links: ['Find Work', 'Find Crew', 'Job Descriptions', 'Salary Guidelines', 'Crew FAQ'],
+  },
+  {
+    title: 'Tools',
+    links: ['Cost Calculator', 'Guides', 'Documents', 'Forms'],
+  },
+  {
+    title: 'Company',
+    links: ['About Us', 'Newsroom', 'Contact', 'Our Offices'],
+    secondaryTitle: 'Accounts',
+    secondaryLinks: ['Sign In', 'Register'],
+  },
 ];
 
 export default function Footer() {
   return (
-    <motion.footer
-      className="footer"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.14 }}
-      variants={reveal}
-    >
-      <motion.div className="footer-grid" variants={stagger}>
-        {Object.entries(footerColumns).map(([title, links]) => (
-          <motion.div key={title} variants={reveal}>
-            <h2>{title}</h2>
-            {links.map((link) => <a href="#" key={link}>{link}</a>)}
-          </motion.div>
-        ))}
-      </motion.div>
-      <div className="footer-bottom">
-        <img src={assets.logo} alt="Luxury Yacht Group" />
-        <div className="socials">
-          {socialIcons.map(([label, icon, width]) => (
-            <a href="#" aria-label={label} key={label}>
-              <img src={icon} alt="" style={{ width: `${width}px` }} />
-            </a>
+    <footer className="footer">
+      <div className="footer-inner">
+        <div className="footer-grid">
+          {footerColumns.map((column) => (
+            <div className="footer-column" key={column.title}>
+              <h3 className="footer-column-title">{column.title}</h3>
+              <ul className="footer-link-list">
+                {column.links.map((link) => (
+                  <li key={link}>
+                    <a className="footer-link" href="#">
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              {column.secondaryTitle && (
+                <>
+                  <h3 className="footer-column-title footer-column-title-secondary">{column.secondaryTitle}</h3>
+                  <ul className="footer-link-list">
+                    {column.secondaryLinks.map((link) => (
+                      <li key={link}>
+                        <a className="footer-link" href="#">
+                          {link}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
+            </div>
           ))}
         </div>
-        <div className="legal">
-          <a href="#">Terms of Use</a>
-          <a href="#">Privacy Policy</a>
-          <span>© 2026 Luxury Yacht Group. All Rights Reserved.</span>
+
+        <div className="footer-bottom-bar">
+          <a className="footer-bottom-logo" href="/" aria-label="Luxury Yacht Group">
+            <img src={footerLogo} alt="Luxury Yacht Group" />
+          </a>
+
+          <div className="footer-bottom-legal">
+            <span className="footer-bottom-copy">© 2024 Luxury Yacht Group. All Rights Reserved.</span>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+          </div>
+
+          <div className="footer-bottom-social" aria-label="Social links">
+            {socialIconAssets.map(({ label, href, src, width }) => (
+              <a key={label} href={href} aria-label={label}>
+                <img src={src} alt="" style={{ width: `${width}px` }} />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
-    </motion.footer>
+    </footer>
   );
 }

@@ -17,7 +17,7 @@ export default function CharterSection() {
       />
       <div className="center-actions">
         <a className="button button-primary" href="#">Plan a Charter <Icon name="arrowRight" size={16} /></a>
-        <a className="text-link icon-link" href="#">Request Availability <Icon name="arrowRight" size={14} /></a>
+        <a className="button button-outlined-luxury" href="#">Request Availability <Icon name="arrowRight" size={16} /></a>
       </div>
       <div className="carousel-container">
         <div className="section-row-title">
