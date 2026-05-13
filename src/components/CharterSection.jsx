@@ -1,11 +1,11 @@
 import React from "react";
-import { motion } from 'framer-motion';
 import { charterYachts, destinations } from '../data.js';
 import Icon from './Icons.jsx';
-import { cardReveal, luxuryEase, stagger } from '../motion.js';
+import CarouselSection from './CarouselSection.jsx';
+import CharterYachtCard from './CharterYachtCard.jsx';
+import DestinationCard from './DestinationCard.jsx';
 import MotionSection from './MotionSection.jsx';
 import SectionHeader from './SectionHeader.jsx';
-import YachtCard from './YachtCard.jsx';
 
 export default function CharterSection() {
   return (
@@ -19,32 +19,32 @@ export default function CharterSection() {
         <a className="button button-primary" href="#">Plan a Charter <Icon name="arrowRight" size={16} /></a>
         <a className="text-link icon-link" href="#">Request Availability <Icon name="arrowRight" size={14} /></a>
       </div>
-      <div className="section-row-title">
-        <span>Featured Charter Yachts</span>
-        <a href="#">View All <Icon name="arrowRight" size={14} /></a>
+      <div className="carousel-container">
+        <div className="section-row-title">
+          <span>Featured Charter Yachts</span>
+        </div>
       </div>
-      <motion.div className="card-row" variants={stagger}>
-        {charterYachts.map((yacht, index) => <YachtCard yacht={yacht} dark key={`${yacht[0]}-${index}`} />)}
-      </motion.div>
-      <div className="section-row-title">
-        <span>Featured Destinations</span>
-        <a href="#">View All <Icon name="arrowRight" size={14} /></a>
+      <CarouselSection
+        ariaLabel="Featured Charter Yachts"
+        className="charter-carousel"
+        ctaLabel="View All Charter Yachts"
+        items={charterYachts}
+        renderItem={(yacht) => <CharterYachtCard yacht={yacht} />}
+        variant="cards-5"
+      />
+      <div className="carousel-container">
+        <div className="section-row-title">
+          <span>Featured Destinations</span>
+        </div>
       </div>
-      <motion.div className="destination-grid" variants={stagger}>
-        {destinations.map(([name, image]) => (
-          <motion.a
-            className="destination-card"
-            href="#"
-            key={name}
-            variants={cardReveal}
-            whileHover={{ y: -5, transition: { duration: 0.42, ease: luxuryEase } }}
-          >
-            <img src={image} alt={name} />
-            <span>{name}</span>
-            <small>View Guide <Icon name="arrowRight" size={12} /></small>
-          </motion.a>
-        ))}
-      </motion.div>
+      <CarouselSection
+        ariaLabel="Featured Destinations"
+        className="destinations-carousel"
+        ctaLabel="View All Destinations"
+        items={destinations}
+        renderItem={(destination) => <DestinationCard destination={destination} />}
+        variant="destinations"
+      />
     </MotionSection>
   );
 }

@@ -9,7 +9,8 @@ const footerColumns = {
   'Yacht Support': menus['Yacht Support'],
   Crew: menus.Crew,
   Tools: menus.Tools,
-  Company: ['About Us', 'Newsroom', 'Contact', 'Our Offices', 'Sign In', 'Register'],
+  Company: ['About Us', 'Newsroom', 'Contact', 'Our Offices'],
+  Accounts: ['Sign In', 'Register'],
 };
 
 const socialIcons = [

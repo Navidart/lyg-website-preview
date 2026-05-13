@@ -1,12 +1,6 @@
 import React from "react";
 
 const iconPaths = {
-  search: (
-    <>
-      <circle cx="10.5" cy="10.5" r="5.5" />
-      <path d="m15 15 4 4" />
-    </>
-  ),
   chevron: <path d="m6 9 6 6 6-6" />,
   arrowRight: <path d="M5 12h14m-5-5 5 5-5 5" />,
   yacht: (
@@ -79,7 +73,7 @@ const iconPaths = {
   ),
 };
 
-export default function Icon({ name, size = 24, className = "" }) {
+export default function Icon({ name, size = 24, className = "", strokeWidth = 1.45 }) {
   return (
     <svg
       aria-hidden="true"
@@ -89,7 +83,7 @@ export default function Icon({ name, size = 24, className = "" }) {
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth="1.45"
+      strokeWidth={strokeWidth}
       viewBox="0 0 24 24"
       width={size}
     >

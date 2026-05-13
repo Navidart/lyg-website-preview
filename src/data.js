@@ -15,12 +15,25 @@ export const menus = {
   Newsroom: ['Latest News', 'Crew News', 'Sales Insights', 'Charter Updates', 'Yacht Support Articles'],
 };
 
+const saleYachtImages = [
+  'https://www.figma.com/api/mcp/asset/3de19bbb-331b-40b0-8f8c-4054c9e97a8b',
+  'https://www.figma.com/api/mcp/asset/b736594a-4492-4c42-abb5-b9e32592d4c9',
+  'https://www.figma.com/api/mcp/asset/c965d67d-7bd8-4220-a5b2-d460b02e6518',
+  'https://www.figma.com/api/mcp/asset/8c414c27-ddde-4496-bd15-1f709821f37b',
+  'https://www.figma.com/api/mcp/asset/d233f200-d6b2-4960-98ec-1393fa0f7592',
+];
+
 export const saleYachts = [
-  ['M/Y SOLACE', '47.5m • Heesen • 2021', '$24,900,000', 'https://www.figma.com/api/mcp/asset/3de19bbb-331b-40b0-8f8c-4054c9e97a8b'],
-  ['M/Y SERENITY', '55m • Benetti • 2019', '$32,500,000', 'https://www.figma.com/api/mcp/asset/b736594a-4492-4c42-abb5-b9e32592d4c9'],
-  ['M/Y FREEDOM', '38m • Sunseeker • 2020', '$12,950,000', 'https://www.figma.com/api/mcp/asset/c965d67d-7bd8-4220-a5b2-d460b02e6518'],
-  ['M/Y ATLANTIS', '42m • Sanlorenzo • 2021', '$16,800,000', 'https://www.figma.com/api/mcp/asset/8c414c27-ddde-4496-bd15-1f709821f37b'],
-  ['M/Y AURORA', '45m • Feadship • 2022', '$21,750,000', 'https://www.figma.com/api/mcp/asset/d233f200-d6b2-4960-98ec-1393fa0f7592'],
+  { id: 'solace', name: 'M/Y SOLACE', size: '47.5m', builder: 'Heesen', year: '2021', price: '$24,900,000', ctaLabel: 'View Details', image: saleYachtImages[0] },
+  { id: 'serenity', name: 'M/Y SERENITY', size: '55m', builder: 'Benetti', year: '2019', price: '$32,500,000', ctaLabel: 'View Details', image: saleYachtImages[1] },
+  { id: 'freedom', name: 'M/Y FREEDOM', size: '38m', builder: 'Sunseeker', year: '2020', price: '$12,950,000', ctaLabel: 'View Details', image: saleYachtImages[2] },
+  { id: 'atlantis', name: 'M/Y ATLANTIS', size: '42m', builder: 'Sanlorenzo', year: '2021', price: '$16,800,000', ctaLabel: 'View Details', image: saleYachtImages[3] },
+  { id: 'aurora', name: 'M/Y AURORA', size: '45m', builder: 'Feadship', year: '2022', price: '$21,750,000', ctaLabel: 'View Details', image: saleYachtImages[4] },
+  { id: 'odyssey', name: 'M/Y ODYSSEY', size: '52m', builder: 'Amels', year: '2020', price: '$29,750,000', ctaLabel: 'View Details', image: saleYachtImages[0] },
+  { id: 'vela', name: 'M/Y VELA', size: '40m', builder: 'Mangusta', year: '2018', price: '$15,400,000', ctaLabel: 'View Details', image: saleYachtImages[1] },
+  { id: 'mariner', name: 'M/Y MARINER', size: '49m', builder: 'Trinity', year: '2017', price: '$19,950,000', ctaLabel: 'View Details', image: saleYachtImages[2] },
+  { id: 'celeste', name: 'M/Y CELESTE', size: '44m', builder: 'Baglietto', year: '2023', price: '$26,300,000', ctaLabel: 'View Details', image: saleYachtImages[3] },
+  { id: 'meridian', name: 'M/Y MERIDIAN', size: '58m', builder: 'Feadship', year: '2016', price: '$34,900,000', ctaLabel: 'View Details', image: saleYachtImages[4] },
 ];
 
 export const charterYachts = [
@@ -29,13 +42,24 @@ export const charterYachts = [
   ['M/Y KISMET', '68m • Lurssen', 'From $455,000 / week', 'https://www.figma.com/api/mcp/asset/e6d03390-54fe-4807-8347-33eacaaf057a'],
   ["M/Y O'PARI", '50m • Golden Yachts', 'From $245,000 / week', 'https://www.figma.com/api/mcp/asset/0b53c451-2974-481e-ae64-0e0b8aac1b72'],
   ["M/Y O'PARI", '50m • Golden Yachts', 'From $245,000 / week', 'https://www.figma.com/api/mcp/asset/912d8ffa-ad6e-4682-9f42-18812a001f25'],
+  ['M/Y BELLA', '54m • CRN', 'From $285,000 / week', 'https://www.figma.com/api/mcp/asset/4fd53696-26d4-4a47-ac10-324bfd63b9f5'],
+  ['M/Y ARCADIA', '46m • Feadship', 'From $230,000 / week', 'https://www.figma.com/api/mcp/asset/58306e6b-5faa-481e-aa4e-d3bb272d1a9c'],
+  ['M/Y REVERIE', '62m • Benetti', 'From $390,000 / week', 'https://www.figma.com/api/mcp/asset/e6d03390-54fe-4807-8347-33eacaaf057a'],
+  ['M/Y CALYPSO', '48m • Heesen', 'From $260,000 / week', 'https://www.figma.com/api/mcp/asset/0b53c451-2974-481e-ae64-0e0b8aac1b72'],
+  ['M/Y SIENNA', '57m • Amels', 'From $340,000 / week', 'https://www.figma.com/api/mcp/asset/912d8ffa-ad6e-4682-9f42-18812a001f25'],
 ];
 
 export const destinations = [
-  ['The Mediterranean', 'https://www.figma.com/api/mcp/asset/87094e62-b435-4953-b11e-914fd769d34c'],
-  ['The Caribbean', 'https://www.figma.com/api/mcp/asset/145e5861-023f-45ec-9b64-90618ce550b4'],
-  ['The Bahamas', 'https://www.figma.com/api/mcp/asset/20468d5a-461c-445b-b590-28b5e2267a14'],
-  ['South Pacific', 'https://www.figma.com/api/mcp/asset/2c398fa3-11f2-468d-b6b2-afe3a1529b5b'],
+  { id: 'mediterranean', name: 'The Mediterranean', image: 'https://www.figma.com/api/mcp/asset/87094e62-b435-4953-b11e-914fd769d34c' },
+  { id: 'caribbean', name: 'The Caribbean', image: 'https://www.figma.com/api/mcp/asset/145e5861-023f-45ec-9b64-90618ce550b4' },
+  { id: 'bahamas', name: 'The Bahamas', image: 'https://www.figma.com/api/mcp/asset/20468d5a-461c-445b-b590-28b5e2267a14' },
+  { id: 'south-pacific', name: 'South Pacific', image: 'https://www.figma.com/api/mcp/asset/2c398fa3-11f2-468d-b6b2-afe3a1529b5b' },
+  { id: 'amalfi-coast', name: 'Amalfi Coast', image: 'https://www.figma.com/api/mcp/asset/87094e62-b435-4953-b11e-914fd769d34c' },
+  { id: 'st-barths', name: 'St. Barths', image: 'https://www.figma.com/api/mcp/asset/145e5861-023f-45ec-9b64-90618ce550b4' },
+  { id: 'exumas', name: 'The Exumas', image: 'https://www.figma.com/api/mcp/asset/20468d5a-461c-445b-b590-28b5e2267a14' },
+  { id: 'french-polynesia', name: 'French Polynesia', image: 'https://www.figma.com/api/mcp/asset/2c398fa3-11f2-468d-b6b2-afe3a1529b5b' },
+  { id: 'balearics', name: 'The Balearics', image: 'https://www.figma.com/api/mcp/asset/87094e62-b435-4953-b11e-914fd769d34c' },
+  { id: 'bvi', name: 'British Virgin Islands', image: 'https://www.figma.com/api/mcp/asset/145e5861-023f-45ec-9b64-90618ce550b4' },
 ];
 
 export const services = ['Financial Services', 'Payroll & Accounting', 'Logistical Support', 'Admin Services', 'Document Library'];
