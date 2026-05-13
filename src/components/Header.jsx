@@ -5,13 +5,16 @@ import Icon from './Icons.jsx';
 
 const stickyLogo = 'https://www.figma.com/api/mcp/asset/5fa9ead2-6fb0-4287-9bf6-3cb25aa595dc';
 const searchGlyph = 'https://www.figma.com/api/mcp/asset/cb495483-f376-401d-a3a3-a52484233b5a';
+const navCaretGlyph = 'https://www.figma.com/api/mcp/asset/1926707a-e2ce-4b1c-a688-d5d0b2c2105f';
 
 export default function Header() {
   const [isStickyVisible, setIsStickyVisible] = useState(false);
   const [hasEnhancedContrast, setHasEnhancedContrast] = useState(false);
   const [isStickyMenuOpen, setIsStickyMenuOpen] = useState(false);
   const [activeStickyMenu, setActiveStickyMenu] = useState('Sales');
+  const [openNavMenu, setOpenNavMenu] = useState(null);
   const stickyHeaderRef = useRef(null);
+  const navCloseTimer = useRef(null);
 
   useEffect(() => {
     const updateStickyHeader = () => {
@@ -68,6 +71,28 @@ export default function Header() {
     };
   }, [isStickyMenuOpen]);
 
+  useEffect(() => () => {
+    if (navCloseTimer.current) {
+      window.clearTimeout(navCloseTimer.current);
+    }
+  }, []);
+
+  const openPrimaryMenu = (label) => {
+    if (navCloseTimer.current) {
+      window.clearTimeout(navCloseTimer.current);
+    }
+    setOpenNavMenu(label);
+  };
+
+  const closePrimaryMenu = () => {
+    if (navCloseTimer.current) {
+      window.clearTimeout(navCloseTimer.current);
+    }
+    navCloseTimer.current = window.setTimeout(() => {
+      setOpenNavMenu(null);
+    }, 150);
+  };
+
   return (
     <>
       <header className="site-header">
@@ -84,10 +109,17 @@ export default function Header() {
         </div>
         <nav className="main-nav" aria-label="Main navigation">
           {Object.entries(menus).map(([label, items]) => (
-            <div className="nav-item" key={label}>
+            <div
+              className={`nav-item ${openNavMenu === label ? 'is-open' : ''}`}
+              key={label}
+              onBlur={closePrimaryMenu}
+              onFocus={() => openPrimaryMenu(label)}
+              onMouseEnter={() => openPrimaryMenu(label)}
+              onMouseLeave={closePrimaryMenu}
+            >
               <a href="#" aria-haspopup="true">
                 {label}
-                <Icon name="chevron" size={8} />
+                <NavCaret />
               </a>
               <DropdownMenu items={items} />
             </div>
@@ -107,6 +139,14 @@ export default function Header() {
         refNode={stickyHeaderRef}
       />
     </>
+  );
+}
+
+function NavCaret() {
+  return (
+    <span className="hero-nav-caret" aria-hidden="true">
+      <img src={navCaretGlyph} alt="" />
+    </span>
   );
 }
 

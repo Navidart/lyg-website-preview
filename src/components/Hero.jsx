@@ -67,6 +67,7 @@ export default function Hero() {
         alt=""
         transition={{ duration: 4.8, ease: luxuryEase }}
       />
+      <div className="hero-ambient" aria-hidden="true" />
       <div className="hero-shade" />
       <motion.div
         animate="visible"
