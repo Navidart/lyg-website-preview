@@ -5,6 +5,7 @@ import AccountPage from '../pages/AccountPage.jsx';
 import AdminPage from '../pages/AdminPage.jsx';
 import LandingPage from '../pages/LandingPage.jsx';
 import NewsAdminPage from '../pages/NewsAdminPage.jsx';
+import NewsArticlePage from '../pages/NewsArticlePage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import { useCurrentPath } from './router.js';
 
@@ -23,6 +24,11 @@ export default function AppRoutes() {
 
   if (path === '/') {
     return <LandingPage />;
+  }
+
+  if (path.startsWith('/news/')) {
+    const slug = decodeURIComponent(path.replace('/news/', ''));
+    return <NewsArticlePage slug={slug} />;
   }
 
   if (path === '/account') {

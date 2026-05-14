@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabaseClient.js';
 import Icon from './Icons.jsx';
 import { cardReveal, luxuryEase, stagger } from '../motion.js';
 import MotionSection from './MotionSection.jsx';
+import { navigateTo } from '../routes/router.js';
 
 export default function NewsroomSection() {
   const [articles, setArticles] = useState([]);
@@ -28,7 +29,7 @@ export default function NewsroomSection() {
         .select('title,excerpt,category,featured_image,published_at,updated_at,slug,news_categories(name,slug)')
         .eq('status', 'published')
         .order('published_at', { ascending: false, nullsFirst: false })
-        .limit(3);
+        .limit(5);
 
       if (!isMounted) return;
 
@@ -74,7 +75,14 @@ export default function NewsroomSection() {
               variants={cardReveal}
               whileHover={{ y: -5, transition: { duration: 0.42, ease: luxuryEase } }}
             >
-              <a className="article-card-link" href={`/news/${article.slug}`}>
+              <a
+                className="article-card-link"
+                href={`/news/${article.slug}`}
+                onClick={(event) => {
+                  event.preventDefault();
+                  navigateTo(`/news/${article.slug}`);
+                }}
+              >
                 <div className="article-image">
                   {article.featured_image && <img src={article.featured_image} alt="" />}
                   <span>{article.news_categories?.name || article.category || 'News'}</span>
