@@ -1,4 +1,6 @@
 import React from "react";
+import { AuthProvider } from './auth/AuthContext.jsx';
+import AuthModal from './components/AuthModal.jsx';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import YachtsSection from './components/YachtsSection.jsx';
@@ -11,7 +13,7 @@ import Footer from './components/Footer.jsx';
 
 export default function App() {
   return (
-    <>
+    <AuthProvider>
       <Header />
       <main>
         <Hero />
@@ -23,6 +25,7 @@ export default function App() {
         <NewsroomSection />
       </main>
       <Footer />
-    </>
+      <AuthModal />
+    </AuthProvider>
   );
 }

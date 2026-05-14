@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from '../auth/AuthContext.jsx';
 import { menus } from '../data.js';
 import DropdownMenu from './DropdownMenu.jsx';
 import Icon from './Icons.jsx';
@@ -8,13 +9,45 @@ const searchGlyph = 'https://www.figma.com/api/mcp/asset/cb495483-f376-401d-a3a3
 const navCaretGlyph = 'https://www.figma.com/api/mcp/asset/1926707a-e2ce-4b1c-a688-d5d0b2c2105f';
 
 export default function Header() {
+  const { openAuthModal, user } = useAuth();
   const [isStickyVisible, setIsStickyVisible] = useState(false);
   const [hasEnhancedContrast, setHasEnhancedContrast] = useState(false);
   const [isStickyMenuOpen, setIsStickyMenuOpen] = useState(false);
   const [activeStickyMenu, setActiveStickyMenu] = useState('Sales');
   const [openNavMenu, setOpenNavMenu] = useState(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef(null);
+  const searchContainerRef = useRef(null);
   const stickyHeaderRef = useRef(null);
   const navCloseTimer = useRef(null);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSearchOpen && searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && isSearchOpen) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSearchOpen]);
 
   useEffect(() => {
     const updateStickyHeader = () => {
@@ -101,10 +134,31 @@ export default function Header() {
             <img src={stickyLogo} alt="Luxury Yacht Group" />
           </a>
           <div className="header-actions">
-            <button className="icon-search" type="button" aria-label="Search">
-              <SearchGlyph />
+            <div className={`search-container ${isSearchOpen ? 'is-open' : ''}`} ref={searchContainerRef}>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search yachts, destinations, crew..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onBlur={() => {
+                  if (searchQuery === '') setIsSearchOpen(false);
+                }}
+                ref={searchInputRef}
+                aria-label="Search field"
+              />
+              <button 
+                className="icon-search" 
+                type="button" 
+                aria-label="Search"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+              >
+                <SearchGlyph />
+              </button>
+            </div>
+            <button className={`button button-ghost ${user ? 'header-account-button' : ''}`} type="button" onClick={openAuthModal}>
+              {user ? <UserAvatar user={user} /> : 'Sign In'}
             </button>
-            <a className="button button-ghost" href="#">Sign In</a>
           </div>
         </div>
         <nav className="main-nav" aria-label="Main navigation">
@@ -131,6 +185,7 @@ export default function Header() {
         hasEnhancedContrast={hasEnhancedContrast}
         isMenuOpen={isStickyMenuOpen}
         isVisible={isStickyVisible}
+        onAuthOpen={openAuthModal}
         onMenuToggle={() => {
           setActiveStickyMenu((current) => current || 'Sales');
           setIsStickyMenuOpen((isOpen) => !isOpen);
@@ -150,7 +205,35 @@ function NavCaret() {
   );
 }
 
-function CompactStickyHeader({ activeMenu, hasEnhancedContrast, isMenuOpen, isVisible, onMenuToggle, onSelectMenu, refNode }) {
+function CompactStickyHeader({ activeMenu, hasEnhancedContrast, isMenuOpen, isVisible, onAuthOpen, onMenuToggle, onSelectMenu, refNode }) {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef(null);
+  const searchContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isSearchOpen && searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setIsSearchOpen(false);
+      }
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape' && isSearchOpen) setIsSearchOpen(false);
+    };
+    document.addEventListener('pointerdown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSearchOpen]);
+
   return (
     <header
       className={`compact-sticky-header ${isVisible ? 'is-visible' : ''} ${hasEnhancedContrast ? 'sticky-header--high-contrast' : ''}`}
@@ -176,10 +259,29 @@ function CompactStickyHeader({ activeMenu, hasEnhancedContrast, isMenuOpen, isVi
           <img src={stickyLogo} alt="Luxury Yacht Group" />
         </a>
         <div className="compact-actions">
-          <button className="compact-search" type="button" aria-label="Search">
-            <SearchGlyph />
-          </button>
-          <a className="compact-sign-in" href="#">Sign In</a>
+          <div className={`search-container compact-search-container ${isSearchOpen ? 'is-open' : ''}`} ref={searchContainerRef}>
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onBlur={() => {
+                if (searchQuery === '') setIsSearchOpen(false);
+              }}
+              ref={searchInputRef}
+              aria-label="Search field"
+            />
+            <button 
+              className="compact-search" 
+              type="button" 
+              aria-label="Search"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              <SearchGlyph />
+            </button>
+          </div>
+          <button className="compact-sign-in sign-in" type="button" onClick={onAuthOpen}>Sign In</button>
           <a className="compact-inquiry" href="#">Start an inquiry</a>
         </div>
       </div>
@@ -243,5 +345,17 @@ function SearchGlyph() {
       className="search-glyph"
       style={{ '--search-icon': `url(${searchGlyph})` }}
     />
+  );
+}
+
+function UserAvatar({ user }) {
+  const imageUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const displayName = user?.user_metadata?.full_name || user?.email || 'User';
+  const initial = displayName.trim().charAt(0).toUpperCase() || 'U';
+
+  return (
+    <span className="user-avatar" aria-label="Open account">
+      {imageUrl ? <img src={imageUrl} alt="" /> : <span>{initial}</span>}
+    </span>
   );
 }
