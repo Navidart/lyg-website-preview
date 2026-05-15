@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient.js';
+import { navigateTo } from '../routes/router.js';
 import { resolveAvatarUrl } from './avatar.js';
 import { normalizeRole } from './roles.js';
 
@@ -163,6 +164,7 @@ export function AuthProvider({ children }) {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [authCallbackError, setAuthCallbackError] = useState(null);
   const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const [profileError, setProfileError] = useState(null);
   const authProcessedRef = useRef(false);
 
@@ -359,11 +361,19 @@ export function AuthProvider({ children }) {
       throw new Error('Supabase is not configured.');
     }
 
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
-    setProfile(null);
-    setProfileError(null);
-    setProfileUserId(null);
+    setIsSigningOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setIsAuthModalOpen(false);
+      setProfile(null);
+      setProfileError(null);
+      setProfileUserId(null);
+      navigateTo('/');
+    } finally {
+      setIsSigningOut(false);
+    }
   }, []);
 
   const user = session?.user ?? null;
@@ -389,6 +399,7 @@ export function AuthProvider({ children }) {
       authCallbackError,
       isProfileLoading: effectiveProfileLoading,
       isSupabaseConfigured,
+      isSigningOut,
       openAuthModal,
       profile,
       profileError,
@@ -406,6 +417,7 @@ export function AuthProvider({ children }) {
       isAuthModalOpen,
       isProfileReady,
       isSupabaseConfigured,
+      isSigningOut,
       effectiveRole,
       openAuthModal,
       profile,

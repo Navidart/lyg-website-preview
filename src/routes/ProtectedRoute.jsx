@@ -4,7 +4,7 @@ import { canAccessAdmin, normalizeRole } from '../auth/roles.js';
 import { navigateTo } from './router.js';
 
 export default function ProtectedRoute({ children, requireAdmin = false }) {
-  const { isAuthLoading, isProfileLoading, openAuthModal, profileError, role, user } = useAuth();
+  const { isAuthLoading, isProfileLoading, isSigningOut, openAuthModal, profileError, role, user } = useAuth();
   const normalizedRole = normalizeRole(role);
   const canAccessAdminRoute = canAccessAdmin(normalizedRole);
   const isCheckingAdminRole = Boolean(user) && requireAdmin && !profileError && normalizedRole === null;
@@ -17,7 +17,9 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
 
     if (!user) {
       navigateTo('/');
-      openAuthModal();
+      if (!isSigningOut) {
+        openAuthModal();
+      }
       return;
     }
 
@@ -28,7 +30,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
     if (redirectTarget) {
       navigateTo(redirectTarget);
     }
-  }, [canAccessAdminRoute, isLoading, normalizedRole, openAuthModal, profileError, requireAdmin, user]);
+  }, [canAccessAdminRoute, isLoading, isSigningOut, normalizedRole, openAuthModal, profileError, requireAdmin, user]);
 
   if (isLoading) {
     return <RouteLoadingState label={requireAdmin ? 'Checking admin access...' : 'Restoring secure session...'} />;

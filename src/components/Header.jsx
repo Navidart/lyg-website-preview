@@ -12,7 +12,7 @@ const searchGlyph = 'https://www.figma.com/api/mcp/asset/cb495483-f376-401d-a3a3
 const navCaretGlyph = 'https://www.figma.com/api/mcp/asset/1926707a-e2ce-4b1c-a688-d5d0b2c2105f';
 
 export default function Header() {
-  const { openAuthModal, profile, role, signOut, user } = useAuth();
+  const { openAuthModal, profile, role, user } = useAuth();
   const [isStickyVisible, setIsStickyVisible] = useState(false);
   const [hasEnhancedContrast, setHasEnhancedContrast] = useState(false);
   const [isStickyMenuOpen, setIsStickyMenuOpen] = useState(false);
@@ -160,7 +160,7 @@ export default function Header() {
               </button>
             </div>
             {user ? (
-              <AccountMenu profile={profile} role={role} signOut={signOut} user={user} />
+              <AccountMenu onAuthOpen={openAuthModal} profile={profile} role={role} user={user} />
             ) : (
               <button className="button button-ghost" type="button" onClick={openAuthModal}>
                 Sign In
@@ -194,7 +194,6 @@ export default function Header() {
         isVisible={isStickyVisible}
         onAuthOpen={openAuthModal}
         role={role}
-        signOut={signOut}
         profile={profile}
         user={user}
         onMenuToggle={() => {
@@ -227,7 +226,6 @@ function CompactStickyHeader({
   refNode,
   profile,
   role,
-  signOut,
   user,
 }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -306,7 +304,7 @@ function CompactStickyHeader({
             </button>
           </div>
           {user ? (
-            <AccountMenu profile={profile} role={role} signOut={signOut} user={user} />
+            <AccountMenu onAuthOpen={onAuthOpen} profile={profile} role={role} user={user} />
           ) : (
             <button className="compact-sign-in sign-in" type="button" onClick={onAuthOpen}>Sign In</button>
           )}
@@ -376,7 +374,7 @@ function SearchGlyph() {
   );
 }
 
-function AccountMenu({ profile, role, signOut, user }) {
+function AccountMenu({ onAuthOpen, profile, role, user }) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef(null);
   const triggerRef = useRef(null);
@@ -420,9 +418,9 @@ function AccountMenu({ profile, role, signOut, user }) {
     navigateTo('/admin');
   };
 
-  const handleSignOut = async () => {
+  const handleSignOut = () => {
     setIsOpen(false);
-    await signOut();
+    onAuthOpen();
   };
 
   return (

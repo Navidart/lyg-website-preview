@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext.jsx';
 import { getAuthCallbackUrl, getOAuthRedirectPath, getOAuthRedirectUrl } from '../auth/oauthRedirect.js';
 import { supabase } from '../lib/supabaseClient.js';
 import { navigateTo } from '../routes/router.js';
+import Avatar from './Avatar.jsx';
 import Icon from './Icons.jsx';
 import Logo from './Logo.jsx';
 
@@ -38,8 +39,19 @@ function didSignUpSendConfirmation(data) {
   return true;
 }
 
+function getDisplayName(profile, user) {
+  const metadata = user?.user_metadata ?? {};
+  const firstName = profile?.first_name?.trim?.();
+  const lastName = profile?.last_name?.trim?.();
+  const profileName = profile?.full_name?.trim?.();
+  const metadataName = metadata.full_name?.trim?.() || metadata.name?.trim?.();
+  const displayName = [firstName, lastName].filter(Boolean).join(' ') || profileName || metadataName;
+
+  return displayName && !displayName.includes('@') ? displayName : null;
+}
+
 export default function AuthModal() {
-  const { closeAuthModal, isAuthModalOpen, isSupabaseConfigured, signOut, user } = useAuth();
+  const { closeAuthModal, isAuthModalOpen, isSupabaseConfigured, profile, signOut, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -221,7 +233,7 @@ export default function AuthModal() {
 
     try {
       await signOut();
-      setMessage('You have been signed out.');
+      closeAuthModal();
     } catch (signOutError) {
       setError(getAuthErrorMessage(signOutError));
     } finally {
@@ -256,32 +268,51 @@ export default function AuthModal() {
     }
   };
 
+  const displayName = user ? getDisplayName(profile, user) : null;
+  const dialogLabel = user ? 'Close logout dialog' : 'Close sign in dialog';
+
   return (
     <div className="auth-modal-layer" role="presentation">
-      <button className="auth-modal-backdrop" type="button" aria-label="Close sign in dialog" onClick={closeAuthModal} />
+      <button className="auth-modal-backdrop" type="button" aria-label={dialogLabel} onClick={closeAuthModal} />
       <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-        <button className="auth-modal-close" type="button" aria-label="Close sign in dialog" onClick={closeAuthModal}>
+        <button className="auth-modal-close" type="button" aria-label={dialogLabel} onClick={closeAuthModal}>
           <Icon name="ico-cross-large" size={24} />
         </button>
 
         <div className="auth-modal-header">
-          <Logo className="auth-modal-logo" />
-          <h2 id={titleId}>{user ? 'Account' : 'Welcome to LYG'}</h2>
+          {!user && <Logo className="auth-modal-logo" />}
+          <h2 id={titleId}>{user ? 'Log out?' : 'Welcome to LYG'}</h2>
           <p>
             {user
-              ? 'You are signed in with Supabase email authentication.'
+              ? "You're about to log out of this account."
               : 'Access your account or create one.'}
           </p>
         </div>
 
         {user ? (
           <>
-            <div className="auth-user-state">
-              <span>Signed in as</span>
-              <strong>{user.email}</strong>
-              <button className="button button-outline auth-submit" type="button" onClick={handleSignOut} disabled={isSubmitting}>
-                {isSubmitting ? 'Signing out...' : 'Log out'}
-              </button>
+            <div className="auth-user-state auth-logout-state">
+              <div className="auth-logout-user">
+                <Avatar
+                  ariaLabel="Signed-in account"
+                  className="auth-logout-avatar"
+                  fallbackName={displayName || user.email || 'User'}
+                  profile={profile}
+                  user={user}
+                />
+                <div>
+                  {displayName && <strong>{displayName}</strong>}
+                  <span>{user.email}</span>
+                </div>
+              </div>
+              <div className="auth-logout-actions">
+                <button className="button button-ghost auth-submit" type="button" onClick={closeAuthModal} disabled={isSubmitting}>
+                  Cancel
+                </button>
+                <button className="button button-outline auth-submit auth-logout-button" type="button" onClick={handleSignOut} disabled={isSubmitting}>
+                  {isSubmitting ? 'Logging out...' : 'Log out'}
+                </button>
+              </div>
             </div>
             {error && <p className="auth-alert auth-alert-error">{error}</p>}
             {message && <p className="auth-alert auth-alert-success">{message}</p>}
