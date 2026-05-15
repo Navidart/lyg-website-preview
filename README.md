@@ -16,6 +16,19 @@ npm run dev
 
 Vite will print a local URL, usually `http://localhost:5173`.
 
+For local Google OAuth redirects, set:
+
+```bash
+VITE_AUTH_REDIRECT_URL=http://localhost:5173
+```
+
+In Vercel, set `VITE_AUTH_REDIRECT_URL` to the production domain.
+
+Supabase Auth URL configuration should allow both environments:
+
+- Google OAuth redirect URI: `https://akhtygomypbvcupxtmrs.supabase.co/auth/v1/callback`
+- Additional Redirect URLs: `http://localhost:5173`, `http://localhost:5173/auth/callback`, the production domain, and `production-domain/auth/callback`
+
 ## Build
 
 ```bash

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { supabase } from '../lib/supabaseClient.js';
+import AdminActionButton from '../components/AdminActionButton.jsx';
 import Icon from '../components/Icons.jsx';
 
 const emptyForm = {
@@ -512,14 +513,14 @@ export default function NewsAdminPage() {
                     <>
                       <span>{category.name}</span>
                       <span className="admin-category-actions">
-                        <button type="button" onClick={() => startCategoryEdit(category)}>
-                          <Icon name="ico-edit" size={24} />
+                        <AdminActionButton type="button" onClick={() => startCategoryEdit(category)} label={`Edit ${category.name}`}>
+                          <Icon name="ico-edit" size={16} />
                           <span className="sr-only">Edit {category.name}</span>
-                        </button>
-                        <button type="button" onClick={() => handleCategoryDelete(category)}>
-                          <Icon name="ico-trash" size={24} />
+                        </AdminActionButton>
+                        <AdminActionButton type="button" onClick={() => handleCategoryDelete(category)} label={`Delete ${category.name}`}>
+                          <Icon name="ico-trash" size={16} />
                           <span className="sr-only">Delete {category.name}</span>
-                        </button>
+                        </AdminActionButton>
                       </span>
                     </>
                   )}
@@ -642,14 +643,14 @@ export default function NewsAdminPage() {
                 <span>{formatDate(record.published_at ?? record.updated_at)}</span>
                 <span>{formatDate(record.updated_at)}</span>
                 <span className="admin-table-actions">
-                  <button type="button" onClick={() => openEditForm(record)}>
-                    <Icon name="ico-edit" size={24} />
+                  <AdminActionButton type="button" onClick={() => openEditForm(record)} label={`Edit ${record.title}`}>
+                    <Icon name="ico-edit" size={16} />
                     <span className="sr-only">Edit {record.title}</span>
-                  </button>
-                  <button type="button" onClick={() => handleDelete(record)}>
-                    <Icon name="ico-trash" size={24} />
+                  </AdminActionButton>
+                  <AdminActionButton type="button" onClick={() => handleDelete(record)} label={`Delete ${record.title}`}>
+                    <Icon name="ico-trash" size={16} />
                     <span className="sr-only">Delete {record.title}</span>
-                  </button>
+                  </AdminActionButton>
                 </span>
               </div>
             ))}

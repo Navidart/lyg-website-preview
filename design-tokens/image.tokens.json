@@ -1,0 +1,79 @@
+{
+  "image": {
+    "square": {
+      "$type": "string",
+      "$value": "1/1",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:502",
+        "com.figma.type": "string"
+      }
+    },
+    "landscape-sm": {
+      "$type": "string",
+      "$value": "4/3",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:503",
+        "com.figma.type": "string"
+      }
+    },
+    "landscape-md": {
+      "$type": "string",
+      "$value": "3/2",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:504",
+        "com.figma.type": "string"
+      }
+    },
+    "wide": {
+      "$type": "string",
+      "$value": "16/9",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:505",
+        "com.figma.type": "string"
+      }
+    },
+    "banner": {
+      "$type": "string",
+      "$value": "21/9",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:506",
+        "com.figma.type": "string"
+      }
+    },
+    "portrait-sm": {
+      "$type": "string",
+      "$value": "4/5",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:507",
+        "com.figma.type": "string"
+      }
+    },
+    "portrait-md": {
+      "$type": "string",
+      "$value": "3/4",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:508",
+        "com.figma.type": "string"
+      }
+    },
+    "portrait-lg": {
+      "$type": "string",
+      "$value": "2/3",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:509",
+        "com.figma.type": "string"
+      }
+    },
+    "poster": {
+      "$type": "string",
+      "$value": "9/16",
+      "$extensions": {
+        "com.figma.variableId": "VariableID:164:510",
+        "com.figma.type": "string"
+      }
+    }
+  },
+  "$extensions": {
+    "com.figma.modeName": "Value"
+  }
+}

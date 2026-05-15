@@ -1,24 +1,19 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { canAccessAdmin, normalizeRole } from '../auth/roles.js';
 import { navigateTo } from './router.js';
 
 export default function ProtectedRoute({ children, requireAdmin = false }) {
-  const { isAuthLoading, isProfileLoading, openAuthModal, role, user } = useAuth();
-  const isLoading = isAuthLoading || (Boolean(user) && isProfileLoading);
-  const normalizedRole = role?.trim().toLowerCase() ?? null;
-  const isAdmin = normalizedRole === 'admin';
+  const { isAuthLoading, isProfileLoading, openAuthModal, profileError, role, user } = useAuth();
+  const normalizedRole = normalizeRole(role);
+  const canAccessAdminRoute = canAccessAdmin(normalizedRole);
+  const isCheckingAdminRole = Boolean(user) && requireAdmin && !profileError && normalizedRole === null;
+  const isLoading = isAuthLoading || (Boolean(user) && isProfileLoading) || isCheckingAdminRole;
 
   useEffect(() => {
     if (isLoading) return;
 
-    console.log('[auth guard] decision:', {
-      isAdmin,
-      isLoading,
-      normalizedRole,
-      path: window.location.pathname,
-      requireAdmin,
-      userId: user?.id ?? null,
-    });
+    const redirectTarget = !user ? '/' : requireAdmin && !profileError && !canAccessAdminRoute ? '/account' : null;
 
     if (!user) {
       navigateTo('/');
@@ -26,16 +21,24 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
       return;
     }
 
-    if (requireAdmin && !isAdmin) {
-      navigateTo('/account');
+    if (requireAdmin && profileError) {
+      return;
     }
-  }, [isAdmin, isLoading, normalizedRole, openAuthModal, requireAdmin, user]);
+
+    if (redirectTarget) {
+      navigateTo(redirectTarget);
+    }
+  }, [canAccessAdminRoute, isLoading, normalizedRole, openAuthModal, profileError, requireAdmin, user]);
 
   if (isLoading) {
-    return <RouteLoadingState label="Restoring secure session..." />;
+    return <RouteLoadingState label={requireAdmin ? 'Checking admin access...' : 'Restoring secure session...'} />;
   }
 
-  if (!user || (requireAdmin && !isAdmin)) {
+  if (requireAdmin && profileError) {
+    return <RouteLoadingState label="Unable to verify admin access." />;
+  }
+
+  if (!user || (requireAdmin && !canAccessAdminRoute)) {
     return <RouteLoadingState label="Redirecting..." />;
   }
 

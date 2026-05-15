@@ -1,6 +1,10 @@
 import React, { useEffect, useId, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import { getAuthCallbackUrl, getOAuthRedirectPath, getOAuthRedirectUrl } from '../auth/oauthRedirect.js';
 import { supabase } from '../lib/supabaseClient.js';
+import { navigateTo } from '../routes/router.js';
+import Icon from './Icons.jsx';
+import Logo from './Logo.jsx';
 
 function getAuthErrorMessage(error) {
   if (!error) return '';
@@ -8,13 +12,40 @@ function getAuthErrorMessage(error) {
   return 'Something went wrong. Please try again.';
 }
 
+function isInvalidCredentialsError(error) {
+  const message = error?.message?.toLowerCase() ?? '';
+  return error?.code === 'invalid_credentials' || message.includes('invalid login credentials') || message.includes('invalid credentials');
+}
+
+function isExistingAccountError(error) {
+  const message = error?.message?.toLowerCase() ?? '';
+  return message.includes('already registered') || message.includes('already exists') || message.includes('user already');
+}
+
+function logAuthDevelopmentError(label, details) {
+  if (!import.meta.env.DEV || !details) return;
+  console.error(`[auth] ${label}:`, details);
+}
+
+function didSignUpSendConfirmation(data) {
+  if (!data?.user) return false;
+  if (data.session) return true;
+
+  if (Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    return false;
+  }
+
+  return true;
+}
+
 export default function AuthModal() {
   const { closeAuthModal, isAuthModalOpen, isSupabaseConfigured, signOut, user } = useAuth();
-  const [mode, setMode] = useState('sign-in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [canCreateAccount, setCanCreateAccount] = useState(false);
+  const [canResendConfirmation, setCanResendConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const titleId = useId();
 
@@ -35,6 +66,8 @@ export default function AuthModal() {
     if (!isAuthModalOpen) {
       setError('');
       setMessage('');
+      setCanCreateAccount(false);
+      setCanResendConfirmation(false);
       setPassword('');
     }
   }, [isAuthModalOpen]);
@@ -45,6 +78,8 @@ export default function AuthModal() {
     event.preventDefault();
     setError('');
     setMessage('');
+    setCanCreateAccount(false);
+    setCanResendConfirmation(false);
 
     if (!isSupabaseConfigured || !supabase) {
       setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
@@ -58,26 +93,125 @@ export default function AuthModal() {
 
     setIsSubmitting(true);
 
-    const response =
-      mode === 'sign-up'
-        ? await supabase.auth.signUp({ email, password })
-        : await supabase.auth.signInWithPassword({ email, password });
+    // TODO: Add email auto-create only if the backend explicitly supports a unified email/password access flow.
+    const response = await supabase.auth.signInWithPassword({ email, password });
 
     setIsSubmitting(false);
 
     if (response.error) {
+      logAuthDevelopmentError('Email sign-in failed', response.error);
+
+      if (isInvalidCredentialsError(response.error)) {
+        setError("We couldn't sign you in. Check your password, or create a new account with this email.");
+        setCanCreateAccount(true);
+        return;
+      }
+
       setError(getAuthErrorMessage(response.error));
       return;
     }
 
-    if (mode === 'sign-up' && !response.data.session) {
-      setMessage('Check your email to confirm your account before signing in.');
-      setPassword('');
+    setPassword('');
+    closeAuthModal();
+    navigateTo(getOAuthRedirectPath());
+  };
+
+  const handleCreateAccount = async () => {
+    setError('');
+    setMessage('');
+    setCanResendConfirmation(false);
+
+    if (!isSupabaseConfigured || !supabase) {
+      setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
       return;
     }
 
-    setMessage(mode === 'sign-up' ? 'Account created. You are now signed in.' : 'Welcome back.');
+    if (!email || !password) {
+      setError('Enter both email and password.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: getAuthCallbackUrl(),
+      },
+    });
+
+    setIsSubmitting(false);
+
+    if (signUpError) {
+      logAuthDevelopmentError('Email sign-up failed', signUpError);
+
+      if (isExistingAccountError(signUpError)) {
+        setError('An account may already exist with this email. Try Forgot password.');
+        setCanCreateAccount(false);
+        setCanResendConfirmation(true);
+        return;
+      }
+
+      setError(getAuthErrorMessage(signUpError));
+      return;
+    }
+
+    setCanCreateAccount(false);
+
+    if (data?.session) {
+      setPassword('');
+      closeAuthModal();
+      navigateTo(getOAuthRedirectPath());
+      return;
+    }
+
+    if (!didSignUpSendConfirmation(data)) {
+      logAuthDevelopmentError('Email sign-up returned no session and no new identity', data);
+      setError('We could not send a confirmation email right now. Please try again in a few minutes or contact support.');
+      setCanResendConfirmation(true);
+      return;
+    }
+
     setPassword('');
+    setMessage('Check your email to confirm your account.');
+  };
+
+  const handleResendConfirmation = async () => {
+    setError('');
+    setMessage('');
+
+    if (!isSupabaseConfigured || !supabase) {
+      setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      return;
+    }
+
+    if (!email) {
+      setError('Enter your email address.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const { data: resendData, error: resendError } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: getAuthCallbackUrl(),
+      },
+    });
+
+    setIsSubmitting(false);
+
+    if (resendError) {
+      logAuthDevelopmentError('Confirmation resend failed', resendError);
+      setError(getAuthErrorMessage(resendError));
+      return;
+    }
+
+    setCanCreateAccount(false);
+    setCanResendConfirmation(false);
+    setMessage('Check your email to confirm your account.');
   };
 
   const handleSignOut = async () => {
@@ -98,6 +232,8 @@ export default function AuthModal() {
   const handleGoogleSignIn = async () => {
     setError('');
     setMessage('');
+    setCanCreateAccount(false);
+    setCanResendConfirmation(false);
 
     if (!isSupabaseConfigured || !supabase) {
       setError('Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
@@ -109,11 +245,12 @@ export default function AuthModal() {
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}${window.location.pathname}`,
+        redirectTo: getOAuthRedirectUrl(),
       },
     });
 
     if (oauthError) {
+      logAuthDevelopmentError('Google sign-in failed', oauthError);
       setError(getAuthErrorMessage(oauthError));
       setIsSubmitting(false);
     }
@@ -124,53 +261,41 @@ export default function AuthModal() {
       <button className="auth-modal-backdrop" type="button" aria-label="Close sign in dialog" onClick={closeAuthModal} />
       <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <button className="auth-modal-close" type="button" aria-label="Close sign in dialog" onClick={closeAuthModal}>
-          ×
+          <Icon name="ico-cross-large" size={24} />
         </button>
 
         <div className="auth-modal-header">
-          <p className="auth-modal-eyebrow">Luxury Yacht Group</p>
-          <h2 id={titleId}>{user ? 'Account' : mode === 'sign-up' ? 'Create your account' : 'Sign in'}</h2>
+          <Logo className="auth-modal-logo" />
+          <h2 id={titleId}>{user ? 'Account' : 'Welcome to LYG'}</h2>
           <p>
             {user
               ? 'You are signed in with Supabase email authentication.'
-              : 'Access your LYG account with email and password.'}
+              : 'Access your account or create one.'}
           </p>
         </div>
 
         {user ? (
-          <div className="auth-user-state">
-            <span>Signed in as</span>
-            <strong>{user.email}</strong>
-            <button className="button button-outline auth-submit" type="button" onClick={handleSignOut} disabled={isSubmitting}>
-              {isSubmitting ? 'Signing out...' : 'Log out'}
-            </button>
-          </div>
-        ) : (
           <>
-            <div className="auth-mode-toggle" role="tablist" aria-label="Authentication mode">
-              <button
-                className={mode === 'sign-in' ? 'is-active' : ''}
-                type="button"
-                onClick={() => {
-                  setMode('sign-in');
-                  setError('');
-                  setMessage('');
-                }}
-              >
-                Sign in
-              </button>
-              <button
-                className={mode === 'sign-up' ? 'is-active' : ''}
-                type="button"
-                onClick={() => {
-                  setMode('sign-up');
-                  setError('');
-                  setMessage('');
-                }}
-              >
-                Sign up
+            <div className="auth-user-state">
+              <span>Signed in as</span>
+              <strong>{user.email}</strong>
+              <button className="button button-outline auth-submit" type="button" onClick={handleSignOut} disabled={isSubmitting}>
+                {isSubmitting ? 'Signing out...' : 'Log out'}
               </button>
             </div>
+            {error && <p className="auth-alert auth-alert-error">{error}</p>}
+            {message && <p className="auth-alert auth-alert-success">{message}</p>}
+          </>
+        ) : (
+          <>
+            <div className="auth-oauth auth-oauth-primary">
+              <button className="button button-ghost auth-google-button" type="button" onClick={handleGoogleSignIn} disabled={isSubmitting}>
+                <Icon name="ico-google" size={24} />
+                Continue with Google
+              </button>
+            </div>
+
+            <p className="auth-email-divider">or sign in with email</p>
 
             <form className="auth-form" onSubmit={handleSubmit}>
               <label>
@@ -178,40 +303,63 @@ export default function AuthModal() {
                 <input
                   autoComplete="email"
                   inputMode="email"
-                  onChange={(event) => setEmail(event.target.value)}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    setCanCreateAccount(false);
+                    setCanResendConfirmation(false);
+                  }}
                   placeholder="name@example.com"
                   type="email"
                   value={email}
                 />
               </label>
 
-              <label>
-                <span>Password</span>
-                <input
-                  autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Enter your password"
-                  type="password"
-                  value={password}
-                />
-              </label>
+              <div className="auth-password-field">
+                <label>
+                  <span>Password</span>
+                  <input
+                    autoComplete="current-password"
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                      setCanCreateAccount(false);
+                      setCanResendConfirmation(false);
+                    }}
+                    placeholder="Enter your password"
+                    type="password"
+                    value={password}
+                  />
+                </label>
+
+                <a className="auth-helper-link" href="#" onClick={(event) => event.preventDefault()}>
+                  Forgot password?
+                </a>
+              </div>
 
               <button className="button button-primary auth-submit" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Please wait...' : mode === 'sign-up' ? 'Create account' : 'Sign in'}
+                {isSubmitting ? 'Please wait...' : 'Continue'}
               </button>
             </form>
 
-            <div className="auth-oauth">
-              <span>or</span>
-              <button className="button button-ghost auth-google-button" type="button" onClick={handleGoogleSignIn} disabled={isSubmitting}>
-                Continue with Google
+            {error && <p className="auth-alert auth-alert-error">{error}</p>}
+            {message && <p className="auth-alert auth-alert-success">{message}</p>}
+
+            {canCreateAccount && (
+              <button className="button auth-submit auth-create-account" type="button" onClick={handleCreateAccount} disabled={isSubmitting}>
+                {isSubmitting ? 'Creating account...' : 'Create a new account'}
               </button>
-            </div>
+            )}
+
+            {canResendConfirmation && (
+              <button className="button button-outline auth-submit auth-resend-confirmation" type="button" onClick={handleResendConfirmation} disabled={isSubmitting}>
+                {isSubmitting ? 'Sending...' : 'Resend confirmation email'}
+              </button>
+            )}
+
+            <a className="auth-help-link" href="#" onClick={(event) => event.preventDefault()}>
+              Need help?
+            </a>
           </>
         )}
-
-        {error && <p className="auth-alert auth-alert-error">{error}</p>}
-        {message && <p className="auth-alert auth-alert-success">{message}</p>}
       </section>
     </div>
   );

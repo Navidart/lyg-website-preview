@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
+import Avatar from '../components/Avatar.jsx';
+import Logo from '../components/Logo.jsx';
 import { navigateTo } from '../routes/router.js';
-
-const adminLogo = 'https://www.figma.com/api/mcp/asset/5fa9ead2-6fb0-4287-9bf6-3cb25aa595dc';
 
 const adminLinks = [
   { label: 'Dashboard', path: '/admin' },
@@ -15,7 +15,7 @@ const adminLinks = [
 ];
 
 export default function AdminLayout({ children, title }) {
-  const { openAuthModal, signOut, user } = useAuth();
+  const { openAuthModal, profile, signOut, user } = useAuth();
   const currentPath = window.location.pathname;
 
   return (
@@ -25,7 +25,7 @@ export default function AdminLayout({ children, title }) {
           event.preventDefault();
           navigateTo('/');
         }}>
-          <img src={adminLogo} alt="Luxury Yacht Group" />
+          <Logo />
         </a>
         <nav>
           {adminLinks.map((link) => (
@@ -51,7 +51,7 @@ export default function AdminLayout({ children, title }) {
           </div>
           <div className="admin-account-actions">
             <button className="admin-avatar-button" type="button" onClick={openAuthModal} aria-label="Open account">
-              <AdminAvatar user={user} />
+              <Avatar className="admin-avatar" fallbackName={user?.email ?? 'Admin'} profile={profile} user={user} />
             </button>
             <button className="admin-logout-button" type="button" onClick={signOut}>
               Logout
@@ -61,17 +61,5 @@ export default function AdminLayout({ children, title }) {
         <div className="admin-panel">{children}</div>
       </section>
     </main>
-  );
-}
-
-function AdminAvatar({ user }) {
-  const imageUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-  const displayName = user?.user_metadata?.full_name || user?.email || 'Admin';
-  const initial = displayName.trim().charAt(0).toUpperCase() || 'A';
-
-  return (
-    <span className="admin-avatar">
-      {imageUrl ? <img src={imageUrl} alt="" /> : <span>{initial}</span>}
-    </span>
   );
 }

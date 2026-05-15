@@ -3,9 +3,11 @@ import AccountLayout from '../layouts/AccountLayout.jsx';
 import AdminLayout from '../layouts/AdminLayout.jsx';
 import AccountPage from '../pages/AccountPage.jsx';
 import AdminPage from '../pages/AdminPage.jsx';
+import AuthCallbackPage from '../pages/AuthCallbackPage.jsx';
 import LandingPage from '../pages/LandingPage.jsx';
 import NewsAdminPage from '../pages/NewsAdminPage.jsx';
 import NewsArticlePage from '../pages/NewsArticlePage.jsx';
+import UsersAdminPage from '../pages/UsersAdminPage.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import { useCurrentPath } from './router.js';
 
@@ -26,6 +28,10 @@ export default function AppRoutes() {
     return <LandingPage />;
   }
 
+  if (path === '/auth/callback') {
+    return <AuthCallbackPage />;
+  }
+
   if (path.startsWith('/news/')) {
     const slug = decodeURIComponent(path.replace('/news/', ''));
     return <NewsArticlePage slug={slug} />;
@@ -42,10 +48,19 @@ export default function AppRoutes() {
   }
 
   if (adminTitles[path]) {
+    let content;
+    if (path === '/admin/news') {
+      content = <NewsAdminPage />;
+    } else if (path === '/admin/users') {
+      content = <UsersAdminPage />;
+    } else {
+      content = <AdminPage title={adminTitles[path]} />;
+    }
+
     return (
       <ProtectedRoute requireAdmin>
         <AdminLayout title={adminTitles[path]}>
-          {path === '/admin/news' ? <NewsAdminPage /> : <AdminPage title={adminTitles[path]} />}
+          {content}
         </AdminLayout>
       </ProtectedRoute>
     );

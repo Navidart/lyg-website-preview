@@ -1,4 +1,5 @@
-const footerLogo = 'https://www.figma.com/api/mcp/asset/7f69e832-1293-43c0-9fb6-24fb84af5b3e';
+import Logo from './Logo.jsx';
+
 const socialIconAssets = [
   {
     label: 'Instagram',
@@ -100,7 +101,7 @@ export default function Footer() {
 
         <div className="footer-bottom-bar">
           <a className="footer-bottom-logo" href="/" aria-label="Luxury Yacht Group">
-            <img src={footerLogo} alt="Luxury Yacht Group" />
+            <Logo />
           </a>
 
           <div className="footer-bottom-legal">

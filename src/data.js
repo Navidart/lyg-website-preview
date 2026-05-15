@@ -1,6 +1,6 @@
 export const assets = {
   hero: 'https://www.figma.com/api/mcp/asset/1965eb96-f2a4-417a-a2d8-beb5da71c66d',
-  logo: 'https://www.figma.com/api/mcp/asset/10ff3566-7591-4a92-8184-6d06bdf6e704',
+  logo: '/assets/brand/lyg-logo.svg',
   blueprint: 'https://www.figma.com/api/mcp/asset/813e5666-5e3b-4c3c-b482-515e9687e660',
   crewHire: 'https://www.figma.com/api/mcp/asset/c90ea63f-b28d-487a-8cc4-c0c3ff789d47',
   crewFind: 'https://www.figma.com/api/mcp/asset/40d90c14-cbd6-4e22-b171-33fecc69421d',
