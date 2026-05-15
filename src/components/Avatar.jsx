@@ -16,7 +16,7 @@ export default function Avatar({ ariaLabel, className, fallbackName = 'User', pr
   return (
     <span className={className} aria-label={ariaLabel}>
       {imageUrl ? (
-        <img src={imageUrl} alt="" onError={handleImageError} />
+        <img src={imageUrl} alt="" onError={handleImageError} referrerPolicy="no-referrer" />
       ) : (
         <span>{initial}</span>
       )}

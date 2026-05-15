@@ -9,17 +9,22 @@ function getIdentityData(user) {
 }
 
 export function getAvatarCandidates({ profile, user } = {}) {
-  const metadata = user?.user_metadata ?? {};
+  const metadata = user?.user_metadata ?? user?.raw_user_meta_data ?? user?.rawUserMetaData ?? {};
   const identities = getIdentityData(user);
-  const providerAvatarUrl = firstStringValue(identities.map((identityData) => identityData.avatar_url));
+  const providerAvatarUrl = firstStringValue(
+    identities.map((identityData) => identityData.avatar_url ?? identityData.avatarUrl)
+  );
   const providerPicture = firstStringValue(identities.map((identityData) => identityData.picture));
 
   return [
     { source: 'user.user_metadata.avatar_url', url: metadata.avatar_url },
+    { source: 'user.user_metadata.avatarUrl', url: metadata.avatarUrl },
     { source: 'user.user_metadata.picture', url: metadata.picture },
+    { source: 'user.user_metadata.picture_url', url: metadata.picture_url },
     { source: 'user.identities.identity_data.avatar_url', url: providerAvatarUrl },
     { source: 'user.identities.identity_data.picture', url: providerPicture },
     { source: 'user.auth_avatar_url', url: user?.auth_avatar_url },
+    { source: 'profile.auth_avatar_url', url: profile?.auth_avatar_url },
     { source: 'profile.avatar_url', url: profile?.avatar_url },
   ]
     .map((candidate) => ({

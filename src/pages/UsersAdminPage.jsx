@@ -368,6 +368,19 @@ export default function UsersAdminPage() {
               const providerType = isOAuth ? 'OAuth' : 'Email/password';
               const isGoogleProvider = normalizedProvider === 'google' || providers.includes('google') || Boolean(userMetadata.iss);
               const phoneDisplay = getAdminPhoneDisplay(u.phone);
+              const avatarUser = u.id === currentUser?.id
+                ? {
+                    ...u,
+                    ...currentUser,
+                    app_metadata: u.app_metadata || currentUser.app_metadata,
+                    auth_avatar_url: u.auth_avatar_url || currentUser.auth_avatar_url,
+                    identities: currentUser.identities || u.identities,
+                    user_metadata: {
+                      ...(u.user_metadata || {}),
+                      ...(currentUser.user_metadata || {}),
+                    },
+                  }
+                : u;
 
               return (
                 <div className="admin-cms-row" role="row" key={u.id}>
@@ -375,8 +388,8 @@ export default function UsersAdminPage() {
                     <Avatar
                       className="admin-user-avatar"
                       fallbackName={u.full_name || u.email || 'User'}
-                      profile={{ full_name: u.full_name, email: u.email, avatar_url: u.avatar_url }}
-                      user={u}
+                      profile={{ full_name: u.full_name, email: u.email, avatar_url: u.avatar_url, auth_avatar_url: u.auth_avatar_url }}
+                      user={avatarUser}
                     />
                     <strong>{u.full_name || 'No Name'}</strong>
                   </span>
