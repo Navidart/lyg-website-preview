@@ -246,10 +246,10 @@ export default function UsersAdminPage() {
     setMessage('');
     setError('');
 
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update({ status: newStatus })
-      .eq('id', targetUser.id);
+    const { error: updateError } = await supabase.rpc('update_user_status', {
+      target_user_id: targetUser.id,
+      new_status: newStatus,
+    });
 
     if (updateError) {
       setError(updateError.message);
@@ -270,23 +270,20 @@ export default function UsersAdminPage() {
       return;
     }
 
-    const confirmed = window.confirm(`Permanently remove user ${targetUser.email}? This will delete their profile. Note: Actual Auth deletion requires a secure backend function.`);
+    const confirmed = window.confirm(`Permanently remove user ${targetUser.email}? This will delete their profile.`);
     if (!confirmed) return;
 
     setMessage('');
     setError('');
 
-    // We only delete from profiles here. 
-    // TODO: Implement secure Edge Function for auth.users deletion.
-    const { error: deleteError } = await supabase
-      .from('profiles')
-      .delete()
-      .eq('id', targetUser.id);
+    const { error: deleteError } = await supabase.rpc('remove_admin_user', {
+      target_user_id: targetUser.id,
+    });
 
     if (deleteError) {
       setError(deleteError.message);
     } else {
-      setMessage(`Profile removed for ${targetUser.email}.`);
+      setMessage(`User removed for ${targetUser.email}.`);
       loadUsers();
     }
   };
@@ -462,7 +459,7 @@ export default function UsersAdminPage() {
                   <AdminActionButton
                     type="button" 
                     onClick={() => handleRemoveUser(u)}
-                    label="Remove user"
+                    label={!isSuperAdmin ? 'Only super admins can remove users' : 'Remove user'}
                     disabled={!isSuperAdmin || u.id === currentUser?.id}
                   >
                     <Icon name="ico-trash" size={16} />

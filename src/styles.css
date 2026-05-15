@@ -4720,6 +4720,12 @@ footer .footer-social-links {
   gap: 12px;
 }
 
+.admin-action-button-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .admin-table-actions button,
 .admin-category-actions button {
   align-items: center;
@@ -4746,6 +4752,12 @@ footer .footer-social-links {
 .admin-table-actions button:hover,
 .admin-category-actions button:hover {
   color: var(--primary-900, #0a2430);
+}
+
+.admin-table-actions button:disabled,
+.admin-category-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
 }
 
 .admin-action-tooltip {
@@ -4791,6 +4803,15 @@ footer .footer-social-links {
 .admin-table-actions button:last-child:hover,
 .admin-category-actions button:last-child:hover {
   color: var(--text-destructive);
+}
+
+.admin-table-actions button:disabled,
+.admin-table-actions button:disabled:hover,
+.admin-category-actions button:disabled,
+.admin-category-actions button:disabled:hover {
+  color: var(--color-icon-disabled, var(--color-text-tertiary, var(--muted-light)));
+  cursor: not-allowed;
+  opacity: 0.48;
 }
 
 .admin-news-module,

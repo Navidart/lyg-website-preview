@@ -6,6 +6,10 @@ import { normalizeRole } from './roles.js';
 
 const AuthContext = createContext(null);
 let oauthExchangePromise = null;
+const unavailableAccountMessages = {
+  blocked: 'This account has been blocked. Please contact support.',
+  removed: 'This account has been removed. Please contact support.',
+};
 
 const expiredConfirmationMessage =
   'This confirmation link has expired or was already used. Please sign in or request a new confirmation email.';
@@ -163,6 +167,7 @@ export function AuthProvider({ children }) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [authCallbackError, setAuthCallbackError] = useState(null);
+  const [authAccessMessage, setAuthAccessMessage] = useState('');
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [profileError, setProfileError] = useState(null);
@@ -302,6 +307,34 @@ export function AuthProvider({ children }) {
           setProfileError(error);
           setProfileUserId(userId);
         } else {
+          if (!data) {
+            setAuthAccessMessage(unavailableAccountMessages.removed);
+            setProfile(null);
+            setProfileError(null);
+            setProfileUserId(userId);
+            setIsSigningOut(true);
+            await supabase.auth.signOut();
+            navigateTo('/');
+            setIsAuthModalOpen(true);
+            setIsSigningOut(false);
+            return;
+          }
+
+          const unavailableMessage = unavailableAccountMessages[data?.status];
+
+          if (unavailableMessage) {
+            setAuthAccessMessage(unavailableMessage);
+            setProfile(null);
+            setProfileError(null);
+            setProfileUserId(userId);
+            setIsSigningOut(true);
+            await supabase.auth.signOut();
+            navigateTo('/');
+            setIsAuthModalOpen(true);
+            setIsSigningOut(false);
+            return;
+          }
+
           const nextProfile = await syncProfileFromAuth(session.user, data);
           setProfile(nextProfile ?? null);
           setProfileError(null);
@@ -345,6 +378,36 @@ export function AuthProvider({ children }) {
       setProfileError(error);
       setProfileUserId(userId);
     } else {
+      if (!data) {
+        setAuthAccessMessage(unavailableAccountMessages.removed);
+        setProfile(null);
+        setProfileError(null);
+        setProfileUserId(userId);
+        setIsSigningOut(true);
+        await supabase.auth.signOut();
+        navigateTo('/');
+        setIsAuthModalOpen(true);
+        setIsSigningOut(false);
+        setIsProfileLoading(false);
+        return;
+      }
+
+      const unavailableMessage = unavailableAccountMessages[data?.status];
+
+      if (unavailableMessage) {
+        setAuthAccessMessage(unavailableMessage);
+        setProfile(null);
+        setProfileError(null);
+        setProfileUserId(userId);
+        setIsSigningOut(true);
+        await supabase.auth.signOut();
+        navigateTo('/');
+        setIsAuthModalOpen(true);
+        setIsSigningOut(false);
+        setIsProfileLoading(false);
+        return;
+      }
+
       const nextProfile = await syncProfileFromAuth(session.user, data);
       setProfile(nextProfile ?? null);
       setProfileError(null);
@@ -354,7 +417,10 @@ export function AuthProvider({ children }) {
   }, [session]);
 
   const openAuthModal = useCallback(() => setIsAuthModalOpen(true), []);
-  const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
+  const closeAuthModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+    setAuthAccessMessage('');
+  }, []);
 
   const signOut = useCallback(async () => {
     if (!supabase) {
@@ -394,6 +460,7 @@ export function AuthProvider({ children }) {
   const value = useMemo(
     () => ({
       closeAuthModal,
+      authAccessMessage,
       isAuthLoading,
       isAuthModalOpen,
       authCallbackError,
@@ -411,6 +478,7 @@ export function AuthProvider({ children }) {
     }),
     [
       authCallbackError,
+      authAccessMessage,
       closeAuthModal,
       effectiveProfileLoading,
       isAuthLoading,

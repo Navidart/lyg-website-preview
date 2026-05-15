@@ -51,7 +51,7 @@ function getDisplayName(profile, user) {
 }
 
 export default function AuthModal() {
-  const { closeAuthModal, isAuthModalOpen, isSupabaseConfigured, profile, signOut, user } = useAuth();
+  const { authAccessMessage, closeAuthModal, isAuthModalOpen, isSupabaseConfigured, profile, signOut, user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -319,6 +319,7 @@ export default function AuthModal() {
           </>
         ) : (
           <>
+            {authAccessMessage && <p className="auth-alert auth-alert-error">{authAccessMessage}</p>}
             <div className="auth-oauth auth-oauth-primary">
               <button className="button button-ghost auth-google-button" type="button" onClick={handleGoogleSignIn} disabled={isSubmitting}>
                 <Icon name="ico-google" size={24} />

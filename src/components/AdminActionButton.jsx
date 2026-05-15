@@ -6,7 +6,7 @@ export default function AdminActionButton({ children, label, ...buttonProps }) {
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
   const showTooltip = () => {
-    if (buttonProps.disabled || !buttonRef.current) return;
+    if (!buttonRef.current) return;
 
     const rect = buttonRef.current.getBoundingClientRect();
     setTooltipPosition({
@@ -19,29 +19,17 @@ export default function AdminActionButton({ children, label, ...buttonProps }) {
 
   return (
     <>
-      <button
-        {...buttonProps}
-        aria-label={label}
-        onBlur={(event) => {
-          hideTooltip();
-          buttonProps.onBlur?.(event);
-        }}
-        onFocus={(event) => {
-          showTooltip();
-          buttonProps.onFocus?.(event);
-        }}
-        onMouseEnter={(event) => {
-          showTooltip();
-          buttonProps.onMouseEnter?.(event);
-        }}
-        onMouseLeave={(event) => {
-          hideTooltip();
-          buttonProps.onMouseLeave?.(event);
-        }}
-        ref={buttonRef}
+      <span
+        className="admin-action-button-wrap"
+        onBlur={hideTooltip}
+        onFocus={showTooltip}
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
       >
-        {children}
-      </button>
+        <button {...buttonProps} aria-label={label} ref={buttonRef}>
+          {children}
+        </button>
+      </span>
       {tooltipPosition &&
         createPortal(
           <span
