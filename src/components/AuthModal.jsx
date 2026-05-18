@@ -276,7 +276,7 @@ export default function AuthModal() {
       <button className="auth-modal-backdrop" type="button" aria-label={dialogLabel} onClick={closeAuthModal} />
       <section className="auth-modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <button className="auth-modal-close" type="button" aria-label={dialogLabel} onClick={closeAuthModal}>
-          <Icon name="ico-cross-large" size={24} />
+          <Icon className="icon-brand-primary" name="ico-cross-large" size={24} />
         </button>
 
         <div className="auth-modal-header">

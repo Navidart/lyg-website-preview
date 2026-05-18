@@ -58,7 +58,7 @@ export default function NewsroomSection() {
           <p className="eyebrow">Newsroom</p>
           <h2>Latest Insights from LYG</h2>
         </div>
-        <a className="text-link icon-link" href="#">View All News <Icon name="arrowRight" size={14} /></a>
+        <a className="text-link icon-link" href="#">View All News <Icon className="icon-brand-primary" name="arrowRight" size={14} /></a>
       </div>
       {isLoading ? (
         <p className="newsroom-empty">Loading latest insights...</p>

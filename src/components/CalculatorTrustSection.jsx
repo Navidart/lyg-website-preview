@@ -32,7 +32,7 @@ export default function CalculatorTrustSection() {
             </div>
           ))}
         </div>
-        <a className="button button-primary" href="#">Open Calculator <span>→</span></a>
+        <a className="button button-primary" href="#">Open Calculator <Icon className="icon-on-brand-primary" name="arrowRight" size={16} /></a>
       </motion.article>
       <motion.article
         className="trust-card"

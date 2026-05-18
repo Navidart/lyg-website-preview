@@ -12,7 +12,7 @@ export default function CarouselArrow({ direction, disabled, onClick }) {
       onClick={onClick}
       type="button"
     >
-      <Icon name="arrowRight" size={16} />
+      <Icon className="icon-brand-primary" name="arrowRight" size={16} />
     </button>
   );
 }

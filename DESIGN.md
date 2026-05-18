@@ -146,6 +146,12 @@ Do not manually invert colors.
 Do not create one-off dark mode colors.
 Do not use primitive colors when semantic colors exist.
 
+Semantic primitive ramps for `success`, `warning`, `destructive`, `info`, and `disabled` must use the approved LYG semantic palettes defined in `/design-tokens/primitives.tokens.json` and surfaced through the existing semantic tokens.
+
+These semantic primitive ramps support status, badge, button, alert, and icon states.
+
+Components must consume semantic tokens such as status, background, text, icon, border, and surface variables instead of hardcoded colors or unofficial fallback colors.
+
 ---
 
 ## Light and Dark Mode
@@ -198,7 +204,8 @@ Common usage:
 
 - Main headings: primary text
 - Paragraphs: secondary text
-- Metadata/helper text: tertiary text
+- Metadata: tertiary text
+- Helper text: muted text by default, or disabled text when the related control is disabled
 - Disabled content: disabled text
 - Brand emphasis: brand text
 - Links: link text
@@ -221,7 +228,67 @@ Use icon tokens for:
 - success/warning/error states
 - disabled icons
 
+Tokenized icon context behavior:
+
+- Card and feature card icons (including CTA arrows) use `icon-brand-primary`.
+- Brand-primary filled buttons use `icon-on-brand-primary`.
+- Brand-primary outlined buttons use `icon-brand-primary`.
+- Neutral/ghost/text buttons use the current text icon color (`currentColor`) unless a component already sets a specific icon token.
+- Monochrome icons should inherit semantic icon/text colors when possible.
+- Multicolor provider/logo icons keep their original source colors.
+
 Avoid decorative icon colors unless part of a specific designed section.
+
+---
+
+## Icon Asset Rules
+
+### Global SVG/Icon Rule
+
+All reusable icons must come from the centralized SVG icon library:
+
+`src/assets/icons/`
+
+Icon folders are organized by meaning:
+
+- `actions/` — edit, delete, ban, view, block, remove
+- `navigation/` — arrows, chevrons, close, menu
+- `system/` — user, search, settings, help, profile
+- `provider/` — Google and other auth/provider icons
+- `modules/` — Yacht Sales, Charters, Find Crew, Find Work, Estimate Calculator
+- `amenities/` — yacht amenity icons
+- `status/` — active, warning, blocked, success
+
+Rules:
+
+- Do NOT inline SVG markup in React components.
+- Do NOT render SVG paths/components directly in JSX.
+- Do NOT allow SVG icons to render as inline/data SVG output in the browser.
+- Do NOT recreate SVG icons manually.
+- Do NOT use icon-library replacements when the icon already exists in the centralized icon folder.
+- Icons must be imported from the SVG asset files and rendered through the shared asset/image pattern.
+- Render reusable icons from `src/assets/icons/` via shared linked image imports (for example `import iconSrc from '...svg?url&no-inline'` + `<span><img src={iconSrc} ... /></span>` inside a wrapper), rather than embedding icon paths in JSX.
+- Use `?url&no-inline` for SVG icon imports so the browser links an actual SVG asset path instead of a `data:image/svg+xml` URL.
+- Apply reusable icon utility classes (including semantic color utilities) on the actual `<img>` element that renders the SVG asset.
+- Do not use random icon-library icons if the icon already exists in `src/assets/icons/`.
+- Before adding a new icon, search the centralized icon library first.
+- If a new icon is needed, save it in the correct folder first, then import/reuse it.
+- Icons should follow the component’s current text/icon color unless the SVG is intentionally multicolor, such as provider logos.
+- Reusable UI icons should use the approved icon size scale: 12, 16, 24, 32, 48, 64, 96. When replacing icons, preserve the existing visual size by selecting the nearest approved size.
+- CTA and forward action arrows should use `src/assets/icons/navigation/ico-arrow-right.svg`.
+- Dialog, modal, popover, overlay, drawer, and panel close buttons should use `src/assets/icons/navigation/ico-cross-large.svg`.
+- Select and dropdown controls should use `src/assets/icons/navigation/ico-chevron-down.svg`.
+- Action icons in admin tables/grids use a standard 16px visual size unless explicitly overridden.
+- Icon-only admin actions should stay visually quiet by default: do not add visible button backgrounds, borders, or boxed treatments unless explicitly requested.
+- Keep icon stroke/fill behavior consistent with the design tokens.
+
+Preferred implementation pattern:
+
+```jsx
+import iconUrl from '@/assets/icons/navigation/ico-arrow-right.svg?url&no-inline';
+
+<img src={iconUrl} alt="" aria-hidden="true" />
+```
 
 ---
 
@@ -310,11 +377,19 @@ Available roles:
 
 Usage:
 
-- Page title: main page heading
-- Section title: major page block heading
-- Panel title: card, panel, or grouped content heading
+- `title/page`: main page heading. Keep normal/title case, such as `Charters`, `Your Profile`, or `User Details`.
+- `title/section`: major page section heading. Use 24px uppercase styling, such as `ADD CHARTER` or `MANAGE USERS`.
+- `title/panel`: card, panel, or form group heading. Use 20px normal/title case styling, such as `Basic information`, `Pricing`, `Location`, `Highlighted specs`, or `Full specs`.
 
 Do not create one-off heading sizes.
+Do not use page title styles for panel titles.
+Do not use section title styles for form group titles.
+Form group headings inside cards should use `title/panel`.
+Panel titles should feel softer and more editorial than section titles.
+Do not manually uppercase strings in content unless needed. Prefer typography styling and `text-transform`.
+Use the existing tracking/letter-spacing token where available.
+
+Keep spacing between `title/page`, subtitles, sections, and panels consistent with admin pages.
 
 ---
 
@@ -327,6 +402,12 @@ Available roles:
 - `Typography/Subtitle/Page`
 - `Typography/Subtitle/Section`
 - `Typography/Subtitle/Panel`
+
+Pattern: `Subtitle / Page`
+
+Usage: small contextual subtitle shown above or near a page title, usually representing section/page hierarchy such as `Settings / Account`.
+
+Use `text-tertiary` for the text color and keep it visually lower priority than the main page title.
 
 Subtitles should clarify the title, not repeat it.
 
@@ -380,6 +461,11 @@ Labels:
 - `Typography/Label/LG`
 - `Typography/Label/MD`
 - `Typography/Label/SM`
+
+Form labels should use the shared form label style.
+Field labels must not inherit helper text styling or helper text color. Do not mute labels unless the shared label style explicitly requires it.
+Do not use random uppercase labels unless the design system explicitly defines uppercase form labels for that context.
+Normalize form labels to sentence case or title-appropriate text, such as `Short name`, `Slug`, `Short description`, `Full description`, and `Primary region`.
 
 Menus:
 
@@ -569,38 +655,65 @@ Do not mix random image ratios in card lists unless the layout intentionally sup
 
 ## Button Rules
 
-Use existing button components and tokenized styles.
+All buttons must use the shared/global button system.
+
+Do not create page-specific button classes for standard button styles.
+
+Do not create custom radius values for buttons. Button radius must come from the shared control/button radius token.
+
+Button height, padding, typography, and icon spacing must use existing button/control tokens.
+
+Buttons are defined by tone, type, and size.
+
+Button tones:
+
+- primary
+- secondary
+- neutral
+- destructive
+- success
+- warning
+- info
 
 Button types:
 
-- Primary
-- Secondary
-- Ghost
-- Text/link
-- Destructive
+- filled
+- outline
+- ghost
 
-Primary buttons:
+Button sizes:
 
-- use for the main action only
-- use brand primary background tokens
-- use correct on-brand text tokens
-- should not be repeated multiple times in the same action group
+- compact: 40px height
+- default: 48px height
 
-Secondary buttons:
+Usage:
 
-- use for supporting actions
-- should not visually compete with primary buttons
+- Admin panels and dense admin actions should use compact buttons.
+- Public/marketing primary CTAs can use default buttons.
+- Modal/form primary actions can use default unless the layout is compact.
+- Do not create additional button sizes unless explicitly requested.
 
-Ghost/text buttons:
+Each tone can use each type, for example:
 
-- use for low-emphasis actions
+- primary filled / primary outline / primary ghost
+- secondary filled / secondary outline / secondary ghost
+- neutral filled / neutral outline / neutral ghost
+- destructive filled / destructive outline / destructive ghost
+- success filled / success outline / success ghost
+- warning filled / warning outline / warning ghost
+- info filled / info outline / info ghost
 
-Destructive buttons:
+Semantic button colors must use design tokens only.
 
-- use only for delete, remove, or destructive actions
-- use destructive semantic tokens
+Do not hardcode colors.
 
-Do not invent new button heights, colors, or radius values.
+Do not invent colors outside the token system.
+
+Icons inside buttons should follow the button's semantic foreground/icon color.
+
+Disabled buttons should use shared disabled/muted styles.
+
+If a page needs a destructive button, use tone `destructive` with type `filled`, `outline`, or `ghost`. Do not create a page-specific "danger" class.
 
 ---
 
@@ -612,11 +725,12 @@ Button spacing roles:
 
 - compact button spacing
 - default button spacing
-- large button spacing only where supported by the existing design
 
 Do not manually create one-off button padding.
 
 Button labels should use the correct button typography token.
+
+Do not use 52px button height, random custom heights, or page-specific button heights.
 
 ---
 
@@ -636,7 +750,61 @@ Until formal components are created, use these rules:
 - use focus tokens for focus states
 - use semantic surface/text tokens for backgrounds and text
 
+### Form Control Size Rules
+
+All admin form controls must use the shared control size system. Admin forms use compact controls by default.
+
+- compact control height = 40px total visual height, including border.
+- default control height = 48px.
+- Text inputs, selects, comboboxes, upload-icon controls, and inline field controls must visually align to the same height when placed in the same row.
+- Do not create page-specific input heights.
+- Do not create random custom control sizes.
+- If a field needs to be taller, it must be a deliberate multiline textarea/dropzone variant, not a normal control.
+
 Text inputs, selects, dropdowns, search fields, and textareas should feel like one family.
+
+Helper text under inputs, selects, dropdowns, and comboboxes should use the shared helper text class/style. Helper text uses `text-muted` by default, or `text-disabled` when the related control is disabled. Do not create page-specific helper text color classes. Helper text may appear below a field or inline beside a label, but it must use the same semantic helper text style, sit with consistent spacing, and stay visually secondary so it does not read like a label or primary content.
+
+Field labels must keep their own label color, typography, and hierarchy. Helper/context text may appear beside a label, but only the helper/context text should use the helper text style.
+
+### Inline Label Context
+
+When a field label needs contextual information such as unit, currency, pricing unit, measurement context, or format hint, the context should appear inline beside the label in parentheses. Inline label context uses `text-muted`, sits inline with the label, does not read as a second label, and should use the shared inline label context class/pattern. Do not create page-specific inline helper classes.
+
+Examples:
+
+- `Length (meters)`
+- `Price from (USD · per week)`
+- `Draft (meters)`
+- `Gross tonnage (GT)`
+
+Numeric/unit fields should use the shared compact stepper pattern when increment/decrement controls are useful. Avoid relying on native browser number spinners. Stepper controls must be always visible, keyboard accessible, and use shared control height, radius, border, focus, disabled, and typography tokens.
+
+Reusable upload/dropzone components should share one unified design pattern. Upload/dropzone controls must support drag/drop and click-to-browse, use shared upload interaction styles, and stay consistent across profile/avatar uploads, charter registry uploads, and future document uploads.
+
+### Compact Icon Upload Rule
+
+Small icon upload/select controls inside admin forms should use compact control sizing.
+
+- Empty state text: “Drop SVG or browse”.
+- Selected/uploaded state: show icon preview only.
+- Do not show uploaded file names inside compact icon upload controls unless explicitly requested.
+- Do not nest upload boxes inside upload boxes.
+- Icon assets must come from the centralized icon library.
+
+### Destructive Action Icon Rule
+
+Delete/remove/trash table actions must use `icon-destructive` when enabled and `icon-disabled` when disabled.
+
+Delete/remove/trash actions must use `icon-destructive` when enabled. Disabled destructive actions must use `icon-disabled` or muted disabled styling, not destructive.
+
+- Do not use random red colors.
+- Do not hardcode icon colors.
+- Table/grid action icons remain 16px visual size.
+
+Phone number fields should use the shared `PhoneInput` control everywhere. The country selector and number input should appear as one unified control, not two separate fields.
+
+All phone and country displays must use official SVG flag assets from `src/assets/flag/`. This folder is the source of truth for flags. Do not use emoji, PNG, external, or generated flag assets.
 
 Do not create separate visual systems for each form control.
 
@@ -666,6 +834,10 @@ For add-category style interactions:
 ## Input and Select Component Direction
 
 Inputs, selects, dropdowns, and search fields should belong to one consistent form-control family.
+
+Select and dropdown controls must use the shared select control component/style. Do not create page-specific select arrow, padding, border, radius, typography, focus, or disabled treatments.
+
+Dropdown arrows should use the shared arrow size and right inset. The arrow must never touch or crowd the right edge of the control.
 
 Use the same visual foundation for:
 
@@ -752,6 +924,8 @@ Error text should use utility/helper typography.
 ### Select / Dropdown Rules
 
 Select and dropdown triggers should match input height, radius, border, typography, and spacing.
+
+Select and dropdown chevrons should use `src/assets/icons/navigation/ico-chevron-down.svg` with the shared arrow size and inset.
 
 The dropdown menu should use:
 
@@ -882,6 +1056,12 @@ Use:
 - predictable action placement
 - compact controls
 
+Admin sidebars should remain sticky/fixed within the admin shell while main content scrolls. Sidebar overflow should scroll internally when needed.
+
+Detail rows should use consistent vertical padding and value spacing across admin profile/detail pages.
+
+Do not place borders, boxes, or card-like outlines around individual detail fields. Use spacing, labels, and section-level structure for hierarchy unless a bordered field treatment is explicitly requested.
+
 Avoid:
 
 - unnecessary modals
@@ -901,6 +1081,10 @@ Use table typography tokens.
 - Caption: `Typography/Table/Caption`
 
 Use table spacing tokens for header and cell padding.
+
+Table headers should use the shared table header typography/color. Body cells should use the shared table cell/body typography and primary text color by default.
+
+Use `text-muted` only for intentional secondary metadata inside a cell, not as the default table body color.
 
 Table actions should be compact.
 
@@ -960,17 +1144,70 @@ Navigation should feel calm, editorial, and uncluttered.
 
 Use semantic status tokens.
 
-Status categories may include:
+Core status tones:
 
 - success
 - warning
-- destructive/error
+- destructive
+- disabled
 - info
-- neutral
 
 Do not rely on color alone for status.
 
 Use label, icon, helper text, or clear copy where needed.
+
+### Status Label / Badge Rules
+
+Status labels and badges must always hug their content.
+
+Status labels and badges should never stretch full width unless explicitly requested.
+
+Use `inline-flex` for status labels.
+
+Align icon/text vertically center.
+
+Use consistent padding, radius, gap, and typography from design tokens.
+
+Do not create page-specific badge styles.
+
+Do not hardcode colors.
+
+All semantic UI colors must reference the exported design token variables directly. Do not hardcode or create unofficial fallback semantic colors.
+
+All status labels must use the shared `StatusBadge` / `StatusLabel` component or shared status utility. Do not hand-build page-specific status markup.
+
+Use semantic status tokens:
+
+- success: `bg-success-subtle`, `text-success`, `icon-success`
+- warning: `bg-warning-subtle`, `text-warning`, `icon-warning`
+- destructive: `bg-destructive-subtle`, `text-destructive`, `icon-destructive`
+- disabled: `bg-disabled`, `text-disabled`, `icon-disabled`
+- info: `bg-info-subtle`, `text-info`, `icon-info`
+
+Standard status badges should use subtle semantic background colors with matching semantic text and icon colors. Filled semantic backgrounds with "on" foreground colors are reserved for explicitly requested high-emphasis badge variants.
+
+If exact token names differ, use the closest existing semantic token from `design-tokens`.
+
+Status-to-tone mapping:
+
+- Active -> success
+- Published -> success
+- Approved -> success
+- Draft -> warning
+- Pending -> warning
+- Pending profile -> warning
+- Review / In review -> info
+- Scheduled -> info
+- Blocked -> destructive
+- Failed -> destructive
+- Rejected -> destructive
+- Removed -> disabled
+- Deleted -> disabled
+- Unpublished -> disabled
+- Disabled -> disabled
+- Inactive -> disabled
+
+These rules apply to admin tables, detail pages, CMS statuses, news statuses, user statuses, and future status labels.
 
 ---
 
@@ -1132,7 +1369,7 @@ Default modal/dialog surface:
 - background: `color/surface/default` or the existing white/light dialog surface token
 - text: `color/text/primary`
 - secondary text: `color/text/secondary`
-- muted/helper text: `color/text/tertiary`
+- muted/helper text: `text-muted` by default, or `text-disabled` when the related control is disabled
 - border: `color/border/default`
 - close/icon color: `color/icon-secondary` or nearest existing icon token
 - overlay/backdrop: keep the existing overlay token or existing dark translucent backdrop pattern
@@ -1158,12 +1395,12 @@ Do not redesign modal layout, spacing, copy, or behavior while making this conve
 
 ## Close Icon Rules
 
-Close buttons in modals, dialogs, drawers, popovers, and panels should use the official Figma close icon assets.
+Close buttons in modals, dialogs, drawers, popovers, and panels should use centralized close icon assets from `src/assets/icons/navigation/`.
 
 Use:
 
 - `icon cross small` for compact close buttons
-- `icon cross large` for larger modal/dialog close buttons
+- `ico-cross-large` for larger modal/dialog close buttons
 
 Do not use random X icons from icon libraries when the official close icon exists.
 

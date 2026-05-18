@@ -8,6 +8,7 @@ const adminLinks = [
   { label: 'Dashboard', path: '/admin' },
   { label: 'Yachts', path: '/admin/yachts' },
   { label: 'Charters', path: '/admin/charters' },
+  { label: 'Amenities', path: '/admin/amenities' },
   { label: 'Destinations', path: '/admin/destinations' },
   { label: 'News', path: '/admin/news' },
   { label: 'Users', path: '/admin/users' },
@@ -52,6 +53,12 @@ export default function AdminLayout({ children, title }) {
     navigateTo('/');
   };
 
+  const handleProfile = (event) => {
+    event.preventDefault();
+    setIsAccountMenuOpen(false);
+    navigateTo('/profile');
+  };
+
   const handleLogOut = () => {
     setIsAccountMenuOpen(false);
     openAuthModal();
@@ -69,7 +76,7 @@ export default function AdminLayout({ children, title }) {
         <nav>
           {adminLinks.map((link) => (
             <a
-              className={currentPath === link.path ? 'is-active' : ''}
+              className={currentPath === link.path || (link.path !== '/admin' && currentPath.startsWith(`${link.path}/`)) ? 'is-active' : ''}
               href={link.path}
               key={link.path}
               onClick={(event) => {
@@ -85,8 +92,8 @@ export default function AdminLayout({ children, title }) {
       <section className="admin-content">
         <header className="admin-topbar">
           <div>
-            <p>LYG Admin</p>
-            <h1>{title}</h1>
+            <p className="subtitle-page">LYG Admin</p>
+            <h1 className="title-page">{title}</h1>
           </div>
           <div className="admin-account-actions">
             <div className="account-menu" ref={accountMenuRef}>
@@ -103,6 +110,9 @@ export default function AdminLayout({ children, title }) {
               </button>
               {isAccountMenuOpen && (
                 <div className="account-menu-panel" role="menu" aria-label="Account menu">
+                  <a className="account-menu-item" href="/profile" onClick={handleProfile} role="menuitem">
+                    Profile
+                  </a>
                   <a className="account-menu-item" href="/" onClick={handleViewWebsite} role="menuitem">
                     View website
                   </a>

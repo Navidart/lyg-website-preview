@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
   useEffect(() => {
     if (isLoading) return;
 
-    const redirectTarget = !user ? '/' : requireAdmin && !profileError && !canAccessAdminRoute ? '/account' : null;
+    const redirectTarget = !user ? '/' : requireAdmin && !profileError && !canAccessAdminRoute ? '/profile' : null;
 
     if (!user) {
       navigateTo('/');

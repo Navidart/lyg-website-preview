@@ -1698,7 +1698,7 @@
         },
         "section": {
           "$type": "number",
-          "$value": 30,
+          "$value": 24,
           "$extensions": {
             "com.figma.variableId": "VariableID:248:94",
             "com.figma.scopes": [
@@ -1714,7 +1714,7 @@
         },
         "panel": {
           "$type": "number",
-          "$value": 24,
+          "$value": 20,
           "$extensions": {
             "com.figma.variableId": "VariableID:248:95",
             "com.figma.scopes": [
@@ -2264,7 +2264,7 @@
         },
         "section": {
           "$type": "number",
-          "$value": 32,
+          "$value": 30,
           "$extensions": {
             "com.figma.variableId": "VariableID:248:117",
             "com.figma.scopes": [
@@ -2280,7 +2280,7 @@
         },
         "group": {
           "$type": "number",
-          "$value": 28,
+          "$value": 26,
           "$extensions": {
             "com.figma.variableId": "VariableID:248:118",
             "com.figma.scopes": [

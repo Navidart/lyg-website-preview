@@ -7,16 +7,16 @@ import Avatar from './Avatar.jsx';
 import DropdownMenu from './DropdownMenu.jsx';
 import Icon from './Icons.jsx';
 import Logo from './Logo.jsx';
-
-const searchGlyph = 'https://www.figma.com/api/mcp/asset/cb495483-f376-401d-a3a3-a52484233b5a';
-const navCaretGlyph = 'https://www.figma.com/api/mcp/asset/1926707a-e2ce-4b1c-a688-d5d0b2c2105f';
+import searchIconUrl from '../assets/icons/actions/ico-search.svg?url&no-inline';
+import menuIconUrl from '../assets/icons/navigation/ico-menu.svg?url&no-inline';
+import chevronDownIconUrl from '../assets/icons/navigation/ico-chevron-down.svg?url&no-inline';
 
 export default function Header() {
   const { openAuthModal, profile, role, user } = useAuth();
   const [isStickyVisible, setIsStickyVisible] = useState(false);
   const [hasEnhancedContrast, setHasEnhancedContrast] = useState(false);
   const [isStickyMenuOpen, setIsStickyMenuOpen] = useState(false);
-  const [activeStickyMenu, setActiveStickyMenu] = useState('Sales');
+  const [activeStickyMenu, setActiveStickyMenu] = useState(null);
   const [openNavMenu, setOpenNavMenu] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -197,10 +197,9 @@ export default function Header() {
         profile={profile}
         user={user}
         onMenuToggle={() => {
-          setActiveStickyMenu((current) => current || 'Sales');
           setIsStickyMenuOpen((isOpen) => !isOpen);
         }}
-        onSelectMenu={setActiveStickyMenu}
+        onSelectMenu={(label) => setActiveStickyMenu((current) => (current === label ? null : label))}
         refNode={stickyHeaderRef}
       />
     </>
@@ -210,7 +209,7 @@ export default function Header() {
 function NavCaret() {
   return (
     <span className="hero-nav-caret" aria-hidden="true">
-      <img src={navCaretGlyph} alt="" />
+      <img className="svg-icon icon-on-brand-primary" src={chevronDownIconUrl} alt="" aria-hidden="true" />
     </span>
   );
 }
@@ -270,11 +269,9 @@ function CompactStickyHeader({
           onClick={onMenuToggle}
           type="button"
         >
-          <svg className="compact-menu-icon" aria-hidden="true" fill="none" viewBox="0 0 32 32">
-            <path d="M0 7.5H24" />
-            <path d="M0 16H24" />
-            <path d="M0 24.5H24" />
-          </svg>
+          <span className="compact-menu-icon header-icon-asset" aria-hidden="true">
+            <img className="svg-icon icon-on-brand-primary" src={menuIconUrl} alt="" aria-hidden="true" />
+          </span>
           <span>Menu</span>
         </button>
         <a className="compact-logo" href="#" aria-label="Luxury Yacht Group home">
@@ -346,7 +343,9 @@ function StickyAccordionMenu({ activeMenu, isOpen, onClose, onSelectMenu }) {
                   type="button"
                 >
                   <span>{label}</span>
-                  <Icon name="chevron" size={10} className="sticky-menu-chevron" />
+                  <span className="sticky-menu-chevron header-icon-asset" aria-hidden="true">
+                    <img className="svg-icon icon-on-brand-primary" src={chevronDownIconUrl} alt="" aria-hidden="true" />
+                  </span>
                 </button>
                 <div className={`sticky-menu-items-wrap ${isExpanded ? 'is-expanded' : ''}`}>
                   <div className="sticky-menu-items">
@@ -366,11 +365,9 @@ function StickyAccordionMenu({ activeMenu, isOpen, onClose, onSelectMenu }) {
 
 function SearchGlyph() {
   return (
-    <span
-      aria-hidden="true"
-      className="search-glyph"
-      style={{ '--search-icon': `url(${searchGlyph})` }}
-    />
+    <span className="header-search-icon header-icon-asset" aria-hidden="true">
+      <img className="svg-icon icon-on-brand-primary" src={searchIconUrl} alt="" aria-hidden="true" />
+    </span>
   );
 }
 
@@ -418,6 +415,12 @@ function AccountMenu({ onAuthOpen, profile, role, user }) {
     navigateTo('/admin');
   };
 
+  const handleProfileClick = (event) => {
+    event.preventDefault();
+    setIsOpen(false);
+    navigateTo('/profile');
+  };
+
   const handleSignOut = () => {
     setIsOpen(false);
     onAuthOpen();
@@ -439,6 +442,9 @@ function AccountMenu({ onAuthOpen, profile, role, user }) {
 
       {isOpen && (
         <div className="account-menu-panel" role="menu" aria-label="Account menu">
+          <a className="account-menu-item" href="/profile" onClick={handleProfileClick} role="menuitem">
+            Profile
+          </a>
           {isAdmin ? (
             <a className="account-menu-item" href="/admin" onClick={handleAdminClick} role="menuitem">
               Admin Dashboard

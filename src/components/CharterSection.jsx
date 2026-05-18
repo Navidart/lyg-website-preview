@@ -16,8 +16,8 @@ export default function CharterSection() {
         subtitle="Handpicked charter yachts and breathtaking destinations, designed around you."
       />
       <div className="center-actions">
-        <a className="button button-primary" href="#">Plan a Charter <Icon name="arrowRight" size={16} /></a>
-        <a className="button button-outlined-luxury" href="#">Request Availability <Icon name="arrowRight" size={16} /></a>
+        <a className="button button-primary" href="#">Plan a Charter <Icon className="icon-on-brand-primary" name="arrowRight" size={16} /></a>
+        <a className="button button-outlined-luxury" href="#">Request Availability <Icon className="icon-brand-primary" name="arrowRight" size={16} /></a>
       </div>
       <div className="carousel-container">
         <div className="section-row-title">

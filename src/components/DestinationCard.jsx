@@ -16,7 +16,7 @@ export default function DestinationCard({ destination }) {
     >
       <img src={image} alt={name} />
       <span>{name}</span>
-      <small>View Guide <Icon name="arrowRight" size={12} /></small>
+      <small>View Guide <Icon className="icon-brand-primary" name="arrowRight" size={12} /></small>
     </motion.a>
   );
 }

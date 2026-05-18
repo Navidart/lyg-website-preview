@@ -49,21 +49,21 @@
       "name": "Typography/Title/Section",
       "fontFamily": "PT Serif",
       "fontWeight": "Regular",
-      "fontSize": 30,
+      "fontSize": 24,
       "letterSpacing": {
         "unit": "PERCENT",
-        "value": -1
+        "value": 8
       },
-      "textCase": "ORIGINAL"
+      "textCase": "UPPER"
     },
     {
       "name": "Typography/Title/Panel",
       "fontFamily": "PT Serif",
       "fontWeight": "Regular",
-      "fontSize": 24,
+      "fontSize": 20,
       "letterSpacing": {
         "unit": "PERCENT",
-        "value": -1
+        "value": 0
       },
       "textCase": "ORIGINAL"
     },

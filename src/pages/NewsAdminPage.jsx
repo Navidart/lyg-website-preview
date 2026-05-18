@@ -2,7 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { supabase } from '../lib/supabaseClient.js';
 import AdminActionButton from '../components/AdminActionButton.jsx';
-import Icon from '../components/Icons.jsx';
+import StatusBadge from '../components/StatusBadge.jsx';
+import editIconUrl from '../assets/icons/actions/ico-edit.svg?url&no-inline';
+import trashIconUrl from '../assets/icons/actions/ico-trash.svg?url&no-inline';
 
 const emptyForm = {
   title: '',
@@ -514,11 +516,11 @@ export default function NewsAdminPage() {
                       <span>{category.name}</span>
                       <span className="admin-category-actions">
                         <AdminActionButton type="button" onClick={() => startCategoryEdit(category)} label={`Edit ${category.name}`}>
-                          <Icon name="ico-edit" size={16} />
+                          <img className="admin-action-icon" src={editIconUrl} alt="" aria-hidden="true" />
                           <span className="sr-only">Edit {category.name}</span>
                         </AdminActionButton>
                         <AdminActionButton type="button" onClick={() => handleCategoryDelete(category)} label={`Delete ${category.name}`}>
-                          <Icon name="ico-trash" size={16} />
+                          <img className="admin-action-icon" src={trashIconUrl} alt="" aria-hidden="true" />
                           <span className="sr-only">Delete {category.name}</span>
                         </AdminActionButton>
                       </span>
@@ -551,7 +553,7 @@ export default function NewsAdminPage() {
             </label>
             <label>
               <span>Category</span>
-              <select value={form.category_id} onChange={(event) => updateField('category_id', event.target.value)}>
+              <select className="select-control" value={form.category_id} onChange={(event) => updateField('category_id', event.target.value)}>
                 <option value="">Select category</option>
                 {categories.map((category) => (
                   <option value={category.id} key={category.id}>
@@ -573,7 +575,7 @@ export default function NewsAdminPage() {
               <span>Featured Image</span>
               <small>Upload the main image used for news cards and article previews.</small>
               <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageUpload} />
-              {isUploadingImage && <em className="admin-form-helper">Uploading image...</em>}
+              {isUploadingImage && <em className="form-helper-text">Uploading image...</em>}
               <input
                 value={form.featured_image}
                 onChange={(event) => updateField('featured_image', event.target.value)}
@@ -586,7 +588,7 @@ export default function NewsAdminPage() {
             <div className="admin-form-row">
               <label>
                 <span>Status</span>
-                <select value={form.status} onChange={(event) => updateField('status', event.target.value)}>
+                <select className="select-control" value={form.status} onChange={(event) => updateField('status', event.target.value)}>
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>
                 </select>
@@ -638,17 +640,17 @@ export default function NewsAdminPage() {
                 </span>
                 <span className="admin-cms-title-cell">{getCategoryName(record)}</span>
                 <span>
-                  <em className={`admin-status admin-status-${record.status}`}>{record.status}</em>
+                  <StatusBadge status={record.status} />
                 </span>
                 <span>{formatDate(record.published_at ?? record.updated_at)}</span>
                 <span>{formatDate(record.updated_at)}</span>
                 <span className="admin-table-actions">
                   <AdminActionButton type="button" onClick={() => openEditForm(record)} label={`Edit ${record.title}`}>
-                    <Icon name="ico-edit" size={16} />
+                    <img className="admin-action-icon" src={editIconUrl} alt="" aria-hidden="true" />
                     <span className="sr-only">Edit {record.title}</span>
                   </AdminActionButton>
                   <AdminActionButton type="button" onClick={() => handleDelete(record)} label={`Delete ${record.title}`}>
-                    <Icon name="ico-trash" size={16} />
+                    <img className="admin-action-icon" src={trashIconUrl} alt="" aria-hidden="true" />
                     <span className="sr-only">Delete {record.title}</span>
                   </AdminActionButton>
                 </span>

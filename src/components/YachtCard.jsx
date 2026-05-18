@@ -26,7 +26,7 @@ export default function YachtCard({ yacht, dark = false, className = '' }) {
         <h3>{name}</h3>
         <p>{specs}</p>
         <p className="yacht-card__price">{price}</p>
-        <a href="#">{ctaLabel} <Icon name="arrowRight" size={14} /></a>
+        <a href="#">{ctaLabel} <Icon className="icon-brand-primary" name="arrowRight" size={16} /></a>
       </div>
     </motion.article>
   );

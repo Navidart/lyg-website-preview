@@ -1,37 +1,7 @@
 import React, { useEffect, useId, useState } from 'react';
 import { useAuth } from '../auth/AuthContext.jsx';
 import { supabase } from '../lib/supabaseClient.js';
-
-const phoneCountries = [
-  { abbreviation: 'US', code: '+1', flag: '🇺🇸', name: 'United States', placeholder: '(555) 123-4567' },
-  { abbreviation: 'UK', code: '+44', flag: '🇬🇧', name: 'United Kingdom', placeholder: '07123 456789' },
-  { abbreviation: 'PK', code: '+92', flag: '🇵🇰', name: 'Pakistan', placeholder: '0300 1234567' },
-  { abbreviation: 'CA', code: '+1', flag: '🇨🇦', name: 'Canada', placeholder: '(555) 123-4567' },
-  { abbreviation: 'AU', code: '+61', flag: '🇦🇺', name: 'Australia', placeholder: '0412 345 678' },
-  { abbreviation: 'AE', code: '+971', flag: '🇦🇪', name: 'United Arab Emirates', placeholder: '050 123 4567' },
-  { abbreviation: 'FR', code: '+33', flag: '🇫🇷', name: 'France', placeholder: '06 12 34 56 78' },
-  { abbreviation: 'DE', code: '+49', flag: '🇩🇪', name: 'Germany', placeholder: '01512 3456789' },
-  { abbreviation: 'IT', code: '+39', flag: '🇮🇹', name: 'Italy', placeholder: '312 345 6789' },
-  { abbreviation: 'ES', code: '+34', flag: '🇪🇸', name: 'Spain', placeholder: '612 34 56 78' },
-];
-
-function getInitialCountry(phoneValue) {
-  const normalized = phoneValue?.trim() ?? '';
-  return phoneCountries.find((country) => normalized.startsWith(country.code)) ?? phoneCountries[0];
-}
-
-function getInitialPhone(phoneValue, country) {
-  const normalized = phoneValue?.trim() ?? '';
-  if (!normalized) return '';
-  return normalized.startsWith(country.code) ? normalized.slice(country.code.length).trim() : normalized;
-}
-
-function formatPhoneForStorage(phoneValue, country) {
-  const normalized = phoneValue.trim();
-  if (!normalized) return null;
-  if (normalized.startsWith('+')) return normalized;
-  return `${country.code} ${normalized}`;
-}
+import PhoneInput, { formatPhoneForStorage, getInitialCountry, getInitialPhone, phoneCountries } from './PhoneInput.jsx';
 
 function cleanNameValue(value) {
   const normalized = value?.trim() ?? '';
@@ -184,35 +154,12 @@ export default function ProfileCompletionModal() {
 
           <label>
             <span>Phone number (optional)</span>
-            <div className="auth-phone-row">
-              <div className="auth-phone-country">
-                <span aria-hidden="true" className="auth-phone-country-display">
-                  <span className="auth-phone-flag">{selectedCountry.flag}</span>
-                  <span>{selectedCountry.abbreviation}</span>
-                  <span>{selectedCountry.code}</span>
-                </span>
-                <select
-                  aria-label="Phone country code"
-                  className="auth-country-select"
-                  onChange={(event) => setSelectedCountryName(event.target.value)}
-                  value={selectedCountryName}
-                >
-                  {phoneCountries.map((country) => (
-                    <option key={country.name} value={country.name}>
-                      {country.flag} {country.abbreviation} {country.code}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <input
-                autoComplete="tel-national"
-                inputMode="tel"
-                onChange={(event) => setPhone(event.target.value)}
-                placeholder={selectedCountry.placeholder}
-                type="tel"
-                value={phone}
-              />
-            </div>
+            <PhoneInput
+              onCountryChange={setSelectedCountryName}
+              onPhoneChange={setPhone}
+              phone={phone}
+              selectedCountryName={selectedCountryName}
+            />
           </label>
 
           <button className="button button-primary auth-submit" disabled={isSaving} type="submit">

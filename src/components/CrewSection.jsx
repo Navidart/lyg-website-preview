@@ -28,7 +28,7 @@ export default function CrewSection() {
             <p className="eyebrow">{eyebrow}</p>
             <h2>{title}</h2>
             <p>{copy}</p>
-            <a className="button button-outline" href="#">{cta} <Icon name="arrowRight" size={18} /></a>
+            <a className="button button-outline" href="#">{cta} <Icon className="icon-brand-primary" name="arrowRight" size={18} /></a>
           </div>
         </motion.article>
       ))}
