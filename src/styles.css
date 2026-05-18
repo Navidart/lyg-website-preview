@@ -6297,10 +6297,6 @@ footer .footer-social-links {
   text-align: center;
 }
 
-.admin-cms-head > span:last-child {
-  background: inherit;
-}
-
 .admin-cms-row > span:nth-child(2).admin-category-actions,
 .admin-cms-row > span:nth-child(2).admin-table-actions {
   justify-content: center;
