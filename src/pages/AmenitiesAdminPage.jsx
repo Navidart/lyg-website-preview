@@ -499,7 +499,7 @@ export default function AmenitiesAdminPage() {
             </div>
             {filteredAmenities.map((amenity) => (
               <div className="admin-cms-row admin-amenities-row" role="row" key={amenity.id}>
-                <span><strong>{amenity.name}</strong></span>
+                <span className="admin-cms-title-cell">{amenity.name}</span>
                 <span>{amenity.amenity_categories?.name || 'Uncategorized'}</span>
                 <span className="admin-amenity-icon-cell">
                   <img className="svg-icon icon-brand-primary" src={getAmenityIconUrl(amenity.icon)} alt="" aria-hidden="true" />

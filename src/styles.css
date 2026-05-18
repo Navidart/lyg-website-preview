@@ -6535,6 +6535,11 @@ footer .footer-social-links {
   column-gap: 18px;
 }
 
+.admin-amenities-row > span:nth-child(3) {
+  justify-content: center;
+  text-align: center;
+}
+
 .admin-table-filters {
   display: flex;
   align-items: center;
@@ -6589,6 +6594,8 @@ footer .footer-social-links {
   align-items: center;
   display: inline-flex;
   justify-content: center;
+  justify-self: center;
+  width: 100%;
 }
 
 .admin-amenity-icon-cell .svg-icon {
